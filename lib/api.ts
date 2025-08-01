@@ -83,6 +83,10 @@ class ApiClient {
     });
   }
 
+  async getMe() {
+    return this.request("/users/me");
+  }
+
   // Subscription methods
   async getSubscriptions() {
     return this.request("/subscriptions");

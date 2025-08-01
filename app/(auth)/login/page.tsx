@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Head from "next/head";
 import { Button } from "@/components/ui/Button";
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/lib/store";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -16,12 +17,9 @@ export default function LoginPage() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const { status } = useSession();
+  const { status, data: session } = useSession();
   const router = useRouter();
-  if (status === "authenticated") {
-    router.push("/user/dashboard");
-    return null;
-  }
+  const setUser = useAuthStore((state) => state.setUser);
 
   const handleChange = (name: string) => (value: string) => {
     setFormData({
@@ -45,13 +43,29 @@ export default function LoginPage() {
         setError(result.error);
         return;
       }
-      router.push("/user/dashboard");
+      // No redirect or setUser here; handled in useEffect
     } catch {
       setError("Invalid email or password");
     } finally {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (status === "authenticated" && session?.user && session?.accessToken) {
+      // Set Zustand user state directly from session
+      setUser({
+        id: session.user.id,
+        email: session.user.email,
+        name: session.user.name,
+        role: session.user.role,
+        accessToken: session.accessToken,
+      });
+      // Optionally, store token in localStorage for apiClient
+      localStorage.setItem("apex_fx_auth_token", session.accessToken);
+      router.push("/user/dashboard");
+    }
+  }, [status, session, setUser, router]);
 
   return (
     <>

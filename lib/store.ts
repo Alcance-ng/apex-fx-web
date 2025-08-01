@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-interface AuthState {
+export interface AuthState {
   user: {
     id: string;
     email: string;
