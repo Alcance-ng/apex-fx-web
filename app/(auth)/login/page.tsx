@@ -6,6 +6,8 @@ import Head from "next/head";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -14,6 +16,12 @@ export default function LoginPage() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const { status } = useSession();
+  const router = useRouter();
+  if (status === "authenticated") {
+    router.push("/user/dashboard");
+    return null;
+  }
 
   const handleChange = (name: string) => (value: string) => {
     setFormData({
@@ -27,18 +35,17 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-
     try {
-      // TODO: Replace with actual API call
-      console.log("Login attempt:", formData);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // TODO: Handle successful login
-      // - Store auth token
-      // - Redirect to dashboard based on user role
-      alert("Login successful! (This will redirect to dashboard)");
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: formData.email,
+        password: formData.password,
+      });
+      if (result?.error) {
+        setError(result.error);
+        return;
+      }
+      router.push("/user/dashboard");
     } catch {
       setError("Invalid email or password");
     } finally {

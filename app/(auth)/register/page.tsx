@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
+import { apiClient } from "@/lib/api";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -63,21 +64,25 @@ export default function RegisterPage() {
     setIsLoading(true);
     setError("");
     try {
-      // TODO: Replace with actual API call
-      console.log("Registration attempt:", {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
+      const payload = {
+        name: `${formData.firstName} ${formData.lastName}`.trim(),
         email: formData.email,
         password: formData.password,
-      });
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      // TODO: Handle successful registration
-      // - Send verification email via backend
-      // - Redirect to email verification page
+      };
+      console.log("Register payload:", payload);
+      const response = await apiClient.registerUser(payload);
+      console.log("Register response:", response);
+      if (response?.error) {
+        setError(response?.message || "Registration failed. Please try again.");
+        return;
+      }
       router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
-    } catch {
-      setError("Registration failed. Please try again.");
+    } catch (err) {
+      const errorObj = err as { response?: { data?: { message?: string } } };
+      setError(
+        errorObj?.response?.data?.message ||
+          "Registration failed. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }

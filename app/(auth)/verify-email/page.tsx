@@ -7,11 +7,12 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
 import Head from "next/head";
+import { apiClient } from "@/lib/api";
 
 export default function VerifyEmailPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const email = searchParams.get("email") || "";
+  const email = searchParams ? searchParams.get("email") || "" : "";
 
   const [verificationCode, setVerificationCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -52,23 +53,30 @@ export default function VerifyEmailPage() {
     setError("");
 
     try {
-      // TODO: Replace with actual API call
-      console.log("Verification attempt:", {
+      const payload = {
         email,
         code: verificationCode,
-      });
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // TODO: Handle successful verification
+      };
+      console.log("Verify payload:", payload);
+      const response = await apiClient.verifyEmail(payload);
+      console.log("Verify response:", response);
+      if (response?.error) {
+        setError(
+          response?.message || "Invalid verification code. Please try again."
+        );
+        return;
+      }
       setSuccess("Email verified successfully! Redirecting to login...");
 
       setTimeout(() => {
         router.push("/login?verified=true");
       }, 2000);
-    } catch {
-      setError("Invalid verification code. Please try again.");
+    } catch (err) {
+      const errorObj = err as { response?: { data?: { message?: string } } };
+      setError(
+        errorObj?.response?.data?.message ||
+          "Invalid verification code. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -82,15 +90,23 @@ export default function VerifyEmailPage() {
     setSuccess("");
 
     try {
-      // TODO: Replace with actual API call
-      console.log("Resending verification code to:", email);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
+      const payload = {
+        name: "", // Name not needed for resend, backend should ignore
+        email,
+        password: "", // Password not needed for resend, backend should ignore
+      };
+      console.log("Resend payload:", payload);
+      const response = await apiClient.registerUser(payload);
+      console.log("Resend response:", response);
+      if (response?.error) {
+        setError(
+          response?.message ||
+            "Failed to resend verification code. Please try again."
+        );
+        return;
+      }
       setSuccess("Verification code sent! Check your email.");
       setTimeLeft(60); // Reset timer
-
       // Start new countdown
       const timer = setInterval(() => {
         setTimeLeft((prev) => {
@@ -101,8 +117,12 @@ export default function VerifyEmailPage() {
           return prev - 1;
         });
       }, 1000);
-    } catch {
-      setError("Failed to resend verification code. Please try again.");
+    } catch (err) {
+      const errorObj = err as { response?: { data?: { message?: string } } };
+      setError(
+        errorObj?.response?.data?.message ||
+          "Failed to resend verification code. Please try again."
+      );
     } finally {
       setIsResending(false);
     }

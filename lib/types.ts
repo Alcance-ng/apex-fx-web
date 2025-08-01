@@ -31,6 +31,12 @@ export interface RegisterData {
   lastName: string;
 }
 
+export interface RegisterRequest {
+  name: string;
+  email: string;
+  password: string;
+}
+
 // Subscription Types
 export interface Subscription {
   id: string;

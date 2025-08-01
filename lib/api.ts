@@ -1,5 +1,7 @@
 import { APP_CONFIG } from "./constants";
-import type { ApiResponse } from "./types";
+import type { ApiResponse, RegisterRequest } from "./types";
+import axios from "axios";
+import type { AxiosRequestConfig } from "axios";
 
 class ApiClient {
   private baseUrl: string;
@@ -10,37 +12,26 @@ class ApiClient {
 
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: AxiosRequestConfig = {}
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseUrl}${endpoint}`;
-
-    const defaultHeaders: Record<string, string> = {
-      "Content-Type": "application/json",
-    };
-
-    // Add auth token if available
     const token = this.getAuthToken();
-    if (token) {
-      defaultHeaders["Authorization"] = `Bearer ${token}`;
-    }
-
-    const config: RequestInit = {
-      ...options,
-      headers: {
-        ...defaultHeaders,
-        ...options.headers,
-      },
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...Object.fromEntries(
+        Object.entries(options.headers ?? {}).filter(
+          ([, v]) => typeof v === "string"
+        )
+      ), // end Object.fromEntries
     };
-
     try {
-      const response = await fetch(url, config);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data;
+      const response = await axios<ApiResponse<T>>({
+        url,
+        headers,
+        ...options,
+      });
+      return response.data as ApiResponse<T>;
     } catch (error) {
       console.error("API request failed:", error);
       throw error;
@@ -58,7 +49,7 @@ class ApiClient {
   async login(credentials: { email: string; password: string }) {
     return this.request("/auth/login", {
       method: "POST",
-      body: JSON.stringify(credentials),
+      data: credentials,
     });
   }
 
@@ -70,7 +61,7 @@ class ApiClient {
   }) {
     return this.request("/auth/register", {
       method: "POST",
-      body: JSON.stringify(userData),
+      data: userData,
     });
   }
 
@@ -88,7 +79,7 @@ class ApiClient {
   async updateProfile(data: Record<string, unknown>) {
     return this.request("/user/profile", {
       method: "PUT",
-      body: JSON.stringify(data),
+      data,
     });
   }
 
@@ -100,7 +91,7 @@ class ApiClient {
   async subscribe(subscriptionData: Record<string, unknown>) {
     return this.request("/subscriptions/subscribe", {
       method: "POST",
-      body: JSON.stringify(subscriptionData),
+      data: subscriptionData,
     });
   }
 
@@ -132,6 +123,20 @@ class ApiClient {
   async markNotificationAsRead(id: string) {
     return this.request(`/notifications/${id}/read`, {
       method: "PUT",
+    });
+  }
+
+  async registerUser(data: RegisterRequest) {
+    return this.request("/users", {
+      method: "POST",
+      data,
+    });
+  }
+
+  async verifyEmail(data: { email: string; code: string }) {
+    return this.request("/users/verify-email", {
+      method: "POST",
+      data,
     });
   }
 }
