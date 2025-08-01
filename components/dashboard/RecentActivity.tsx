@@ -28,17 +28,31 @@ export function RecentActivity() {
         <h2 className="text-lg font-medium text-lime-700">Recent Activity</h2>
       </div>
       <div className="p-6">
-        <div className="space-y-4">
+        <div className="space-y-4" role="list">
           {activities.map(({ icon: Icon, color, title, time }, idx) => (
-            <div className="flex items-center" key={idx}>
+            <div
+              className="flex flex-row items-center focus-within:ring-2 focus-within:ring-lime-500 rounded-lg outline-none"
+              key={idx}
+              role="listitem"
+              tabIndex={0}
+              aria-label={`${title}, ${time}`}
+            >
               <div
-                className={`w-8 h-8 ${color} rounded-full flex items-center justify-center mr-3`}
+                className={`w-8 h-8 ${color} rounded-full flex items-center justify-center mr-3 shadow focus:outline-none`}
+                aria-hidden="true"
               >
                 <Icon className="h-5 w-5 text-white" />
               </div>
-              <div className="flex-1">
-                <p className="text-sm text-lime-700">{title}</p>
-                <p className="text-xs text-lime-600">{time}</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-lime-900 leading-tight">
+                  {title}
+                </p>
+                <p
+                  className="text-xs text-lime-800"
+                  aria-label={`Time: ${time}`}
+                >
+                  {time}
+                </p>
               </div>
             </div>
           ))}

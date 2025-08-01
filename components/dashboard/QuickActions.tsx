@@ -7,13 +7,6 @@ import {
 
 const actions = [
   {
-    href: "/subscriptions",
-    icon: ChartBarIcon,
-    label: "Manage Subscriptions",
-    iconColor: "text-emerald-700",
-    border: "border-lime-300",
-  },
-  {
     href: "/courses",
     icon: AcademicCapIcon,
     label: "Browse Courses",
@@ -21,16 +14,24 @@ const actions = [
     border: "border-lime-300",
   },
   {
+    href: "/subscriptions",
+    icon: ChartBarIcon,
+    label: "Manage Subscriptions",
+    iconColor: "text-emerald-700",
+    border: "border-emerald-300",
+  },
+
+  {
     href: "/transactions",
     icon: CreditCardIcon,
     label: "View Transactions",
     iconColor: "text-green-700",
-    border: "border-emerald-300",
+    border: "border-green-500",
   },
   {
     href: "/profile",
     icon: UserIcon,
-    label: "Edit Profile",
+    label: "View Profile",
     iconColor: "text-emerald-700",
     border: "border-lime-300",
   },
