@@ -1,11 +1,35 @@
-import type { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Dashboard - Apex FX",
-  description: "Your trading dashboard",
-};
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/Button";
 
 export default function UserDashboardPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  // Redirect if not authenticated
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === "unauthenticated" || !session) {
+    router.push("/login");
+    return null;
+  }
+
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    router.push("/");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -14,8 +38,19 @@ export default function UserDashboardPage() {
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-500">Welcome back!</span>
-              <div className="w-8 h-8 bg-blue-600 rounded-full"></div>
+              <span className="text-sm text-gray-500">
+                Welcome back, {session.user.firstName || session.user.name}!
+              </span>
+              <Button onClick={handleLogout} variant="outline" size="sm">
+                Logout
+              </Button>
+              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-medium">
+                  {(session.user.firstName || session.user.name || "U")
+                    .charAt(0)
+                    .toUpperCase()}
+                </span>
+              </div>
             </div>
           </div>
         </div>

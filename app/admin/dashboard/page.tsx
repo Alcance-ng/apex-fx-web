@@ -1,11 +1,36 @@
-import type { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Admin Dashboard - Apex FX",
-  description: "Admin control panel",
-};
+import { useAdminAuth, useAdminSignOut } from "@/hooks/useAdminNextAuth";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/Button";
 
 export default function AdminDashboardPage() {
+  const { session, status, isAdmin } = useAdminAuth();
+  const adminSignOut = useAdminSignOut();
+  const router = useRouter();
+
+  // Redirect if not authenticated or not admin
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === "unauthenticated" || !session || !isAdmin) {
+    router.push("/admin/login");
+    return null;
+  }
+
+  const handleLogout = async () => {
+    await adminSignOut();
+    router.push("/admin/login");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Admin Header */}
@@ -21,10 +46,20 @@ export default function AdminDashboardPage() {
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                Admin
+              <span className="text-sm text-gray-600">
+                {session.user.firstName || session.user.name} (
+                {session.user.role})
               </span>
-              <div className="w-8 h-8 bg-purple-600 rounded-full"></div>
+              <Button onClick={handleLogout} variant="outline" size="sm">
+                Logout
+              </Button>
+              <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-medium">
+                  {(session.user.firstName || session.user.name || "A")
+                    .charAt(0)
+                    .toUpperCase()}
+                </span>
+              </div>
             </div>
           </div>
         </div>

@@ -1,11 +1,36 @@
-import type { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Super Admin Dashboard - Apex FX",
-  description: "Super administrator control panel",
-};
+import { useAdminAuth, useAdminSignOut } from "@/hooks/useAdminNextAuth";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/Button";
 
 export default function SuperAdminDashboardPage() {
+  const { session, status, isSuperAdmin } = useAdminAuth();
+  const adminSignOut = useAdminSignOut();
+  const router = useRouter();
+
+  // Redirect if not authenticated or not super admin
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === "unauthenticated" || !session || !isSuperAdmin) {
+    router.push("/admin/login");
+    return null;
+  }
+
+  const handleLogout = async () => {
+    await adminSignOut();
+    router.push("/admin/login");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Super Admin Header */}
@@ -19,11 +44,24 @@ export default function SuperAdminDashboardPage() {
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                SUPER ADMIN
+              <span className="text-sm text-red-100">
+                {session.user.firstName || session.user.name} (
+                {session.user.role})
               </span>
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                size="sm"
+                className="border-red-300 text-red-100 hover:bg-red-700"
+              >
+                Logout
+              </Button>
               <div className="w-10 h-10 bg-red-700 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold">SA</span>
+                <span className="text-white font-bold">
+                  {(session.user.firstName || session.user.name || "SA")
+                    .substring(0, 2)
+                    .toUpperCase()}
+                </span>
               </div>
             </div>
           </div>

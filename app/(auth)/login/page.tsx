@@ -16,10 +16,19 @@ export default function LoginPage() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
-  if (status === "authenticated") {
-    router.push("/user/dashboard");
+
+  // Redirect if already authenticated
+  if (status === "authenticated" && session?.user) {
+    const role = session.user.role;
+    if (role === "SUPER_ADMIN") {
+      router.push("/super-admin/dashboard");
+    } else if (role === "ADMIN") {
+      router.push("/admin/dashboard");
+    } else {
+      router.push("/user/dashboard");
+    }
     return null;
   }
 
@@ -35,19 +44,26 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+
     try {
       const result = await signIn("credentials", {
         redirect: false,
         email: formData.email,
         password: formData.password,
       });
+
       if (result?.error) {
-        setError(result.error);
+        setError("Invalid email or password");
         return;
       }
-      router.push("/user/dashboard");
-    } catch {
-      setError("Invalid email or password");
+
+      if (result?.ok) {
+        // Give NextAuth time to update the session
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("An error occurred during login. Please try again.");
     } finally {
       setIsLoading(false);
     }

@@ -2,30 +2,45 @@ import NextAuth, { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
 
-export const authOptions: NextAuthOptions = {
+export const adminAuthOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      name: "Credentials",
+      name: "AdminCredentials",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         try {
+          console.log("[Admin NextAuth] Received credentials:", credentials);
+          const payload = {
+            email: credentials?.email,
+            password: credentials?.password,
+          };
+          console.log("[Admin NextAuth] Payload sent to backend:", payload);
           const res = await axios.post(
-            process.env.NEXT_PUBLIC_BACKEND_BASE_URL + "/auth/login",
+            process.env.NEXT_PUBLIC_BACKEND_BASE_URL + "/admin/login",
+            payload,
             {
-              email: credentials?.email,
-              password: credentials?.password,
+              headers: {
+                "Content-Type": "application/json",
+              },
             }
           );
-
+          console.log("[Admin NextAuth] Backend response:", res.data);
           const data = res.data;
 
           // Handle both possible response formats
           if (data?.success && data?.data) {
             // New format: { success: true, data: { user, token, refreshToken } }
             const { user, token, refreshToken } = data.data;
+
+            // Only allow ADMIN and SUPER_ADMIN roles
+            if (!["ADMIN", "SUPER_ADMIN"].includes(user.role)) {
+              console.error("Invalid role for admin login:", user.role);
+              return null;
+            }
+
             return {
               id: user.id,
               email: user.email,
@@ -37,24 +52,43 @@ export const authOptions: NextAuthOptions = {
               accessToken: token,
               refreshToken: refreshToken,
             };
-          } else if (data?.access_token && data?.user) {
-            // Legacy format: { access_token, user }
+          } else if (data?.access_token && (data?.user || data?.admin)) {
+            // Legacy format: { access_token, user } or { access_token, admin }
+            const legacyUser = data.user || data.admin;
+            // Only allow ADMIN and SUPER_ADMIN roles
+            if (
+              !legacyUser ||
+              !["ADMIN", "SUPER_ADMIN"].includes(legacyUser.role)
+            ) {
+              console.error("Invalid role for admin login:", legacyUser?.role);
+              return null;
+            }
             return {
-              id: data.user.id,
-              email: data.user.email,
+              id: legacyUser.id,
+              email: legacyUser.email,
               name:
-                data.user.name ||
-                `${data.user.firstName} ${data.user.lastName}`,
-              firstName: data.user.firstName,
-              lastName: data.user.lastName,
-              role: data.user.role,
-              isEmailVerified: data.user.isEmailVerified,
+                legacyUser.name ||
+                `${legacyUser.firstName || ""} ${
+                  legacyUser.lastName || ""
+                }`.trim(),
+              firstName: legacyUser.firstName,
+              lastName: legacyUser.lastName,
+              role: legacyUser.role,
+              isEmailVerified: legacyUser.isEmailVerified,
               accessToken: data.access_token,
             };
           }
           return null;
         } catch (error) {
-          console.error("NextAuth authorize error:", error);
+          if (axios.isAxiosError(error)) {
+            console.error(
+              "[Admin NextAuth] Axios error:",
+              error.response?.data,
+              error.message
+            );
+          } else {
+            console.error("[Admin NextAuth] Unknown error:", error);
+          }
           return null;
         }
       },
@@ -103,10 +137,10 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/login",
-    error: "/login", // Error page
+    signIn: "/admin/login",
+    error: "/admin/login", // Error page
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
 
-export default NextAuth(authOptions);
+export default NextAuth(adminAuthOptions);

@@ -2,6 +2,7 @@ import { APP_CONFIG } from "./constants";
 import type { ApiResponse, RegisterRequest } from "./types";
 import axios from "axios";
 import type { AxiosRequestConfig } from "axios";
+import { getSession } from "next-auth/react";
 
 class ApiClient {
   private baseUrl: string;
@@ -15,7 +16,7 @@ class ApiClient {
     options: AxiosRequestConfig = {}
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseUrl}${endpoint}`;
-    const token = this.getAuthToken();
+    const token = await this.getAuthToken();
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -23,8 +24,9 @@ class ApiClient {
         Object.entries(options.headers ?? {}).filter(
           ([, v]) => typeof v === "string"
         )
-      ), // end Object.fromEntries
+      ),
     };
+
     try {
       const response = await axios<ApiResponse<T>>({
         url,
@@ -38,11 +40,14 @@ class ApiClient {
     }
   }
 
-  private getAuthToken(): string | null {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("apex_fx_auth_token");
+  private async getAuthToken(): Promise<string | null> {
+    try {
+      const session = await getSession();
+      return session?.accessToken || null;
+    } catch (error) {
+      console.error("Failed to get auth token:", error);
+      return null;
     }
-    return null;
   }
 
   // Auth methods

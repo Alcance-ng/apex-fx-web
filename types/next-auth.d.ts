@@ -7,16 +7,25 @@ declare module "next-auth" {
       id: string;
       email: string;
       name: string;
+      firstName: string;
+      lastName: string;
       role: string;
+      isEmailVerified: boolean;
     };
     accessToken: string;
+    refreshToken?: string;
   }
+
   interface User extends DefaultUser {
     id: string;
     email: string;
     name: string;
+    firstName: string;
+    lastName: string;
     role: string;
+    isEmailVerified: boolean;
     accessToken: string;
+    refreshToken?: string;
   }
 }
 
@@ -25,7 +34,11 @@ declare module "next-auth/jwt" {
     id: string;
     email: string;
     name: string;
+    firstName: string;
+    lastName: string;
     role: string;
+    isEmailVerified: boolean;
     accessToken: string;
+    refreshToken?: string;
   }
 }
