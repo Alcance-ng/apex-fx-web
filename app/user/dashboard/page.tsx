@@ -7,6 +7,7 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { StatsCards } from "@/components/dashboard/StatsCards";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 export default function UserDashboardPage() {
   const { data: session, status } = useSession();
@@ -16,14 +17,7 @@ export default function UserDashboardPage() {
   if (status === "loading") {
     return (
       <div className="min-h-screen bg-lime-50 flex items-center justify-center">
-        {" "}
-        {/* changed bg to lime-50 */}
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-lime-500 mx-auto mb-4"></div>{" "}
-          {/* changed border to lime-500 */}
-          <p className="text-lime-600">Loading...</p>{" "}
-          {/* changed text to lime-600 */}
-        </div>
+        <LoadingSpinner text="Please wait..." />
       </div>
     );
   }
@@ -41,13 +35,19 @@ export default function UserDashboardPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-900 via-emerald-900 to-lime-900">
       <DashboardHeader user={session.user} onLogout={handleLogout} />
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <section
+        className="max-w-7xl mx-auto px-4 py-8"
+        aria-labelledby="dashboard-section-title"
+      >
+        <h1 id="dashboard-section-title" className="sr-only">
+          User dashboard
+        </h1>
         <div className="space-y-8">
           <StatsCards />
           <QuickActions />
           <RecentActivity />
         </div>
-      </main>
+      </section>
     </div>
   );
 }

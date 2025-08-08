@@ -138,13 +138,14 @@ export default function VerifyEmailPage() {
         />
       </Head>
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 via-emerald-900 to-lime-900 p-4">
-        <Card className="w-full max-w-md bg-white/95 shadow-lg">
+        <Card className="w-full max-w-md bg-gradient-to-br from-green-900/80 via-emerald-900/80 to-lime-900/60 shadow-lg border border-white/10 backdrop-blur-md">
           <div className="p-8">
             {/* Header */}
             <div className="text-center mb-8">
               <Link
                 href="/"
-                className="text-2xl font-bold text-lime-700 mb-6 block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 rounded"
+                className="text-2xl font-bold text-lime-200 mb-6 block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400 rounded transition-colors"
+                aria-label="Go to Apex FX homepage"
               >
                 Apex FX
               </Link>
@@ -154,6 +155,7 @@ export default function VerifyEmailPage() {
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"
@@ -163,40 +165,44 @@ export default function VerifyEmailPage() {
                   />
                 </svg>
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-3xl font-bold text-white mb-2 drop-shadow">
                 Verify your email
               </h1>
-              <p className="text-base text-gray-700">
+              <p className="text-base text-lime-100">
                 We&apos;ve sent a 6-digit verification code to
               </p>
-              <p className="text-base text-gray-900 font-medium">{email}</p>
+              <p className="text-base text-lime-200 font-medium">{email}</p>
             </div>
 
             {/* Success Message */}
             <div aria-live="polite" aria-atomic="true">
               {success && (
                 <div
-                  className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg"
+                  className="mb-6 p-4 bg-green-900/80 border border-green-400 rounded-lg shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-400"
                   role="status"
                 >
-                  <p className="text-green-600 text-sm">{success}</p>
+                  <p className="text-green-200 text-sm">{success}</p>
                 </div>
               )}
               {/* Error Message */}
               {error && (
                 <div
-                  className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg"
+                  className="mb-6 p-4 bg-red-900/80 border border-red-400 rounded-lg shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
                   role="alert"
                 >
-                  <p className="text-red-600 text-sm">{error}</p>
+                  <p className="text-red-200 text-sm">{error}</p>
                 </div>
               )}
             </div>
 
             {/* Verification Form */}
-            <form onSubmit={handleVerify} className="space-y-6">
+            <form
+              onSubmit={handleVerify}
+              className="space-y-6"
+              aria-label="Email verification form"
+            >
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-lime-100 mb-2">
                   Verification Code
                 </label>
                 <Input
@@ -210,9 +216,11 @@ export default function VerifyEmailPage() {
                     setError("");
                   }}
                   placeholder="Enter 6-digit code"
-                  className="w-full text-center text-2xl tracking-widest"
+                  className="w-full text-center text-2xl tracking-widest text-lime-900 bg-white/90 border border-lime-400 focus:border-lime-500 focus:ring-lime-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
+                  aria-required="true"
+                  aria-label="Verification code"
                 />
-                <p className="mt-1 text-xs text-gray-500 text-center">
+                <p className="mt-1 text-xs text-lime-200 text-center">
                   Enter the 6-digit code sent to your email
                 </p>
               </div>
@@ -220,7 +228,8 @@ export default function VerifyEmailPage() {
               <Button
                 type="submit"
                 disabled={isLoading || verificationCode.length !== 6}
-                className="w-full"
+                className="w-full bg-lime-700 hover:bg-lime-800 focus-visible:ring-lime-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-green-900 text-white font-semibold py-3 rounded-lg transition-colors motion-safe:transition-all"
+                aria-label="Verify Email"
               >
                 {isLoading ? "Verifying..." : "Verify Email"}
               </Button>
@@ -228,20 +237,22 @@ export default function VerifyEmailPage() {
 
             {/* Resend Code */}
             <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600 mb-3">
+              <p className="text-sm text-lime-100 mb-3">
                 Didn&apos;t receive the code?
               </p>
 
               {timeLeft > 0 ? (
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-lime-200">
                   You can request a new code in {timeLeft} seconds
                 </p>
-              ) : (
+              ) : null}
+              {timeLeft === 0 && (
                 <Button
                   variant="outline"
                   onClick={handleResendCode}
                   disabled={isResending}
-                  className="w-full"
+                  className="w-full border-lime-700 text-lime-200 hover:bg-lime-900/30 focus-visible:ring-lime-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-green-900 motion-safe:transition-all"
+                  aria-label="Resend verification code"
                 >
                   {isResending ? "Sending..." : "Resend Code"}
                 </Button>
@@ -250,11 +261,12 @@ export default function VerifyEmailPage() {
 
             {/* Back to Registration */}
             <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-lime-100">
                 Wrong email address?{" "}
                 <Link
                   href="/register"
-                  className="font-medium text-lime-700 hover:text-lime-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 rounded"
+                  className="font-medium text-lime-300 hover:text-lime-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400 rounded transition-colors"
+                  aria-label="Go back to registration"
                 >
                   Go back to registration
                 </Link>

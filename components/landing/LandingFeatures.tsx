@@ -74,8 +74,6 @@ export function LandingFeatures() {
             height={600}
             className="rounded-2xl shadow-2xl max-w-full h-auto"
             priority
-            role="img"
-            aria-label="A diverse group of traders analyzing forex charts on multiple screens in a bright, accessible workspace."
           />
         </div>
       </div>

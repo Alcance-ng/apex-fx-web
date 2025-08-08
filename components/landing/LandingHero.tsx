@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export function LandingHero() {
   return (
@@ -16,8 +17,6 @@ export function LandingHero() {
             fill
             className="object-cover object-center rounded-2xl shadow-2xl"
             priority
-            role="img"
-            aria-label="A diverse group of traders analyzing forex charts on multiple screens in a bright, accessible workspace."
           />
         </div>
         {/* Text right */}
@@ -42,50 +41,23 @@ export function LandingHero() {
             comprehensive courses, and exclusive community access.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 w-full">
-            <a
+            <Link
               href="/register"
-              className="flex-1 bg-gradient-to-r from-green-600 to-lime-600 text-white px-8 py-4 rounded-lg text-lg font-semibold text-center hover:from-green-700 hover:to-lime-700 transition-all transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-lime-400 focus:ring-opacity-50"
+              className="flex-1 bg-gradient-to-r from-green-600 to-lime-600 text-white px-8 py-4 rounded-lg text-lg font-semibold text-center hover:from-green-700 hover:to-lime-700 transition-all motion-safe:hover:scale-105 focus:outline-none focus:ring-4 focus:ring-lime-400 focus:ring-opacity-50 motion-reduce:transition-none"
               aria-label="Start Trading Now - Register for Apex FX"
-              role="button"
             >
               Start Trading Now
-            </a>
-            <a
+            </Link>
+            <Link
               href="#pricing"
-              className="flex-1 border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold text-center hover:bg-white hover:text-gray-900 transition-all focus:outline-none focus:ring-4 focus:ring-lime-400 focus:ring-opacity-50"
+              className="flex-1 border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold text-center hover:bg-white hover:text-gray-900 transition-all focus:outline-none focus:ring-4 focus:ring-lime-400 focus:ring-opacity-50 motion-reduce:transition-none"
               aria-label="View Pricing Plans"
-              role="button"
             >
               View Pricing
-            </a>
+            </Link>
           </div>
         </div>
       </div>
-      {/* SEO meta tags for hero section */}
-      <meta
-        name="description"
-        content="Get premium forex trading signals, comprehensive courses, and join our exclusive community at Apex FX."
-      />
-      <meta
-        property="og:title"
-        content="Apex FX - Premium Trading Signals & Education"
-      />
-      <meta
-        property="og:description"
-        content="Join thousands of successful traders with our premium forex signals, comprehensive courses, and exclusive community access."
-      />
-      <meta property="og:image" content="/trade.jpg" />
-      <meta property="og:type" content="website" />
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta
-        name="twitter:title"
-        content="Apex FX - Premium Trading Signals & Education"
-      />
-      <meta
-        name="twitter:description"
-        content="Get premium forex trading signals, comprehensive courses, and join our exclusive community at Apex FX."
-      />
-      <meta name="twitter:image" content="/trade.jpg" />
     </section>
   );
 }

@@ -12,7 +12,7 @@ export function LandingFooter() {
           <div className="text-white text-2xl font-bold mb-2 md:mb-0">
             Apex FX
           </div>
-          <p className="text-gray-400 text-sm">
+          <p className="text-gray-300 text-sm">
             © 2025 Apex FX. All rights reserved.
           </p>
         </div>

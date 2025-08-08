@@ -1,10 +1,11 @@
+import Link from "next/link";
+
 export function LandingPricing() {
   return (
     <section
       id="pricing"
       className="px-4 py-16 md:py-20"
       aria-labelledby="pricing-title"
-      aria-live="polite"
       role="region"
     >
       <div className="max-w-7xl mx-auto">
@@ -21,7 +22,6 @@ export function LandingPricing() {
             role="region"
             aria-labelledby="plan-basic"
             aria-describedby="plan-basic-desc"
-            tabIndex={0}
           >
             <h3 id="plan-basic" className="text-2xl font-bold text-white mb-4">
               Basic
@@ -38,14 +38,13 @@ export function LandingPricing() {
               <li>Basic market analysis</li>
               <li>Community access</li>
             </ul>
-            <a
+            <Link
               href="/register"
               className="block bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold focus:outline-none focus:ring-4 focus:ring-lime-400 focus:ring-opacity-50"
               aria-label="Get Started with Basic Plan"
-              role="button"
             >
               Get Started
-            </a>
+            </Link>
           </div>
           {/* Standard Plan */}
           <div
@@ -53,8 +52,6 @@ export function LandingPricing() {
             role="region"
             aria-labelledby="plan-standard"
             aria-describedby="plan-standard-desc"
-            tabIndex={0}
-            aria-current="true"
           >
             <div
               className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-lime-600 text-white px-4 py-1 rounded-full text-sm font-semibold"
@@ -83,14 +80,13 @@ export function LandingPricing() {
               <li>Course access</li>
               <li>Priority support</li>
             </ul>
-            <a
+            <Link
               href="/register"
               className="block bg-lime-600 text-white py-3 rounded-lg hover:bg-lime-700 transition-colors font-semibold focus:outline-none focus:ring-4 focus:ring-lime-400 focus:ring-opacity-50"
               aria-label="Get Started with Standard Plan"
-              role="button"
             >
               Get Started
-            </a>
+            </Link>
           </div>
           {/* Premium Plan */}
           <div
@@ -98,7 +94,6 @@ export function LandingPricing() {
             role="region"
             aria-labelledby="plan-premium"
             aria-describedby="plan-premium-desc"
-            tabIndex={0}
           >
             <h3
               id="plan-premium"
@@ -119,14 +114,13 @@ export function LandingPricing() {
               <li>Custom strategies</li>
               <li>VIP access</li>
             </ul>
-            <a
+            <Link
               href="/register"
               className="block bg-emerald-600 text-white py-3 rounded-lg hover:bg-emerald-700 transition-colors font-semibold focus:outline-none focus:ring-4 focus:ring-lime-400 focus:ring-opacity-50"
               aria-label="Get Started with Premium Plan"
-              role="button"
             >
               Get Started
-            </a>
+            </Link>
           </div>
         </div>
       </div>

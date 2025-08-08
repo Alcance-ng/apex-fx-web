@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+
 import { Card } from "@/components/ui/Card";
-import Head from "next/head";
+import { ForgotPasswordEmailStep } from "./ForgotPasswordEmailStep";
+import { ForgotPasswordOtpStep } from "./ForgotPasswordOtpStep";
+import { ForgotPasswordPasswordStep } from "./ForgotPasswordPasswordStep";
+import { ForgotPasswordSuccessStep } from "./ForgotPasswordSuccessStep";
 
 type ResetStep = "email" | "otp" | "password" | "success";
 
@@ -170,444 +172,117 @@ export default function ForgotPasswordPage() {
   // Success Step
   if (currentStep === "success") {
     return (
-      <>
-        <Head>
-          <title>Password Reset Successful | Apex FX</title>
-          <meta
-            name="description"
-            content="Your Apex FX password has been reset. You can now sign in with your new password."
-          />
-        </Head>
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 via-emerald-900 to-lime-900 p-4">
-          <Card className="w-full max-w-md bg-white/95 shadow-lg">
-            <div className="p-8 text-center">
-              {/* Success Icon */}
-              <div className="w-16 h-16 bg-lime-100 rounded-full mx-auto mb-6 flex items-center justify-center">
-                <svg
-                  className="w-8 h-8 text-lime-700"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                Password reset successful!
-              </h1>
-              <p className="text-base text-gray-700 mb-8">
-                Your password has been successfully reset. You can now sign in
-                with your new password.
-              </p>
-              <Button
-                onClick={handleBackToLogin}
-                className="w-full bg-lime-700 hover:bg-lime-800 text-white font-semibold py-3 rounded-lg focus-visible:ring-2 focus-visible:ring-lime-500"
-              >
-                Back to login
-              </Button>
-            </div>
-          </Card>
-        </div>
-      </>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 via-emerald-900 to-lime-900 p-4">
+        <Card className="w-full max-w-md bg-gradient-to-br from-green-900/80 via-emerald-900/80 to-lime-900/60 shadow-lg border border-white/10 backdrop-blur-md">
+          <div className="p-8 text-center">
+            <ForgotPasswordSuccessStep onBackToLogin={handleBackToLogin} />
+          </div>
+        </Card>
+      </div>
     );
   }
 
   // Password Reset Step
   if (currentStep === "password") {
     return (
-      <>
-        <Head>
-          <title>Set New Password | Apex FX</title>
-          <meta
-            name="description"
-            content="Set a new password for your Apex FX account after verifying your reset code."
-          />
-        </Head>
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 via-emerald-900 to-lime-900 p-4">
-          <Card className="w-full max-w-md bg-white/95 shadow-lg">
-            <div className="p-8">
-              {/* Header */}
-              <div className="text-center mb-8">
-                <Link
-                  href="/"
-                  className="text-2xl font-bold text-lime-700 mb-6 block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 rounded"
-                >
-                  Apex FX
-                </Link>
-                <div className="w-16 h-16 bg-lime-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <svg
-                    className="w-8 h-8 text-lime-700"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z"
-                    />
-                  </svg>
-                </div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  Set new password
-                </h1>
-                <p className="text-base text-gray-700">
-                  Enter your new password below
-                </p>
-              </div>
-              {/* Error Message */}
-              <div aria-live="polite" aria-atomic="true">
-                {error && (
-                  <div
-                    className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg"
-                    role="alert"
-                  >
-                    <p className="text-red-600 text-base">{error}</p>
-                  </div>
-                )}
-              </div>
-              {/* Password Form */}
-              <form onSubmit={handlePasswordSubmit} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                    New password
-                    <Input
-                      type="password"
-                      required
-                      value={newPassword}
-                      onChange={(value) => {
-                        setNewPassword(value);
-                        setError("");
-                      }}
-                      placeholder="Enter new password"
-                      className="w-full mt-1 text-gray-900 bg-white border border-gray-300 focus:border-lime-500 focus:ring-lime-500"
-                    />
-                  </label>
-                  <p className="mt-1 text-base text-gray-600">
-                    Must be at least 8 characters long
-                  </p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                    Confirm password
-                    <Input
-                      type="password"
-                      required
-                      value={confirmPassword}
-                      onChange={(value) => {
-                        setConfirmPassword(value);
-                        setError("");
-                      }}
-                      placeholder="Confirm new password"
-                      className="w-full mt-1 text-gray-900 bg-white border border-gray-300 focus:border-lime-500 focus:ring-lime-500"
-                    />
-                  </label>
-                </div>
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-lime-700 hover:bg-lime-800 text-white font-semibold py-3 rounded-lg focus-visible:ring-2 focus-visible:ring-lime-500"
-                >
-                  {isLoading ? "Resetting password..." : "Reset password"}
-                </Button>
-              </form>
-              {/* Back to OTP */}
-              <div className="mt-6 text-center">
-                <button
-                  onClick={goBackToOtp}
-                  className="inline-flex items-center text-base text-lime-700 hover:text-lime-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 rounded"
-                >
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                    />
-                  </svg>
-                  Back to verification
-                </button>
-              </div>
-            </div>
-          </Card>
-        </div>
-      </>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 via-emerald-900 to-lime-900 p-4">
+        <Card className="w-full max-w-md bg-gradient-to-br from-green-900/80 via-emerald-900/80 to-lime-900/60 shadow-lg border border-white/10 backdrop-blur-md">
+          <div className="p-8">
+            <ForgotPasswordPasswordStep
+              newPassword={newPassword}
+              setNewPassword={setNewPassword}
+              confirmPassword={confirmPassword}
+              setConfirmPassword={setConfirmPassword}
+              error={error}
+              isLoading={isLoading}
+              onSubmit={handlePasswordSubmit}
+              onBack={goBackToOtp}
+            />
+          </div>
+        </Card>
+      </div>
     );
   }
 
   // OTP Verification Step
   if (currentStep === "otp") {
     return (
-      <>
-        <Head>
-          <title>Verify Reset Code | Apex FX</title>
-          <meta
-            name="description"
-            content="Enter the 6-digit code sent to your email to reset your Apex FX password."
-          />
-        </Head>
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 via-emerald-900 to-lime-900 p-4">
-          <Card className="w-full max-w-md bg-white/95 shadow-lg">
-            <div className="p-8">
-              {/* Header */}
-              <div className="text-center mb-8">
-                <Link
-                  href="/"
-                  className="text-2xl font-bold text-lime-700 mb-6 block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 rounded"
-                >
-                  Apex FX
-                </Link>
-                <div className="w-16 h-16 bg-lime-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <svg
-                    className="w-8 h-8 text-lime-700"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  Enter verification code
-                </h1>
-                <p className="text-base text-gray-700">
-                  We&apos;ve sent a 6-digit code to
-                </p>
-                <p className="text-base text-gray-900 font-medium">{email}</p>
-              </div>
-              {/* Error Message */}
-              <div aria-live="polite" aria-atomic="true">
-                {error && (
-                  <div
-                    className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg"
-                    role="alert"
-                  >
-                    <p className="text-red-600 text-base">{error}</p>
-                  </div>
-                )}
-              </div>
-              {/* OTP Form */}
-              <form onSubmit={handleOtpSubmit} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-800 mb-2">
-                    Verification Code
-                    <Input
-                      type="text"
-                      required
-                      value={otp}
-                      onChange={(value) => {
-                        // Only allow numbers and limit to 6 digits
-                        const numbersOnly = value
-                          .replace(/\D/g, "")
-                          .slice(0, 6);
-                        setOtp(numbersOnly);
-                        setError("");
-                      }}
-                      placeholder="Enter 6-digit code"
-                      className="w-full text-center text-2xl tracking-widest text-gray-900 bg-white border border-gray-300 focus:border-lime-500 focus:ring-lime-500"
-                    />
-                  </label>
-                  <p className="mt-1 text-base text-gray-600 text-center">
-                    Enter the 6-digit code sent to your email
-                  </p>
-                </div>
-                <Button
-                  type="submit"
-                  disabled={isLoading || otp.length !== 6}
-                  className="w-full bg-lime-700 hover:bg-lime-800 text-white font-semibold py-3 rounded-lg focus-visible:ring-2 focus-visible:ring-lime-500"
-                >
-                  {isLoading ? "Verifying..." : "Verify code"}
-                </Button>
-              </form>
-              {/* Resend Code */}
-              <div className="mt-6 text-center">
-                <p className="text-base text-gray-700 mb-3">
-                  Didn&apos;t receive the code?
-                </p>
-                {timeLeft > 0 ? (
-                  <p className="text-base text-gray-600">
-                    You can request a new code in {timeLeft} seconds
-                  </p>
-                ) : (
-                  <Button
-                    variant="outline"
-                    onClick={handleResendOtp}
-                    disabled={isResending}
-                    className="w-full border-lime-700 text-lime-700 hover:bg-lime-50 focus-visible:ring-2 focus-visible:ring-lime-500"
-                  >
-                    {isResending ? "Sending..." : "Resend code"}
-                  </Button>
-                )}
-              </div>
-              {/* Back to Email */}
-              <div className="mt-6 text-center">
-                <button
-                  onClick={goBackToEmail}
-                  className="inline-flex items-center text-base text-lime-700 hover:text-lime-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 rounded"
-                >
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                    />
-                  </svg>
-                  Wrong email address?
-                </button>
-              </div>
-            </div>
-          </Card>
-        </div>
-      </>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 via-emerald-900 to-lime-900 p-4">
+        <Card className="w-full max-w-md bg-gradient-to-br from-green-900/80 via-emerald-900/80 to-lime-900/60 shadow-lg border border-white/10 backdrop-blur-md">
+          <div className="p-8">
+            <ForgotPasswordOtpStep
+              email={email}
+              otp={otp}
+              setOtp={setOtp}
+              error={error}
+              isLoading={isLoading}
+              isResending={isResending}
+              timeLeft={timeLeft}
+              onSubmit={handleOtpSubmit}
+              onResend={handleResendOtp}
+              onBack={goBackToEmail}
+            />
+          </div>
+        </Card>
+      </div>
     );
   }
 
   // Email Input Step (Default)
   return (
-    <>
-      <Head>
-        <title>Forgot Password | Apex FX</title>
-        <meta
-          name="description"
-          content="Reset your Apex FX account password. Enter your email to receive a reset code."
-        />
-      </Head>
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 via-emerald-900 to-lime-900 p-4">
-        <Card className="w-full max-w-md bg-white/95 shadow-lg">
-          <div className="p-8">
-            {/* Header */}
-            <div className="text-center mb-8">
-              <Link
-                href="/"
-                className="text-2xl font-bold text-lime-700 mb-6 block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 rounded"
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 via-emerald-900 to-lime-900 p-4">
+      <Card className="w-full max-w-md bg-gradient-to-br from-green-900/80 via-emerald-900/80 to-lime-900/60 shadow-lg border border-white/10 backdrop-blur-md">
+        <div className="p-8">
+          <ForgotPasswordEmailStep
+            email={email}
+            setEmail={setEmail}
+            error={error}
+            isLoading={isLoading}
+            onSubmit={handleEmailSubmit}
+          />
+          {/* Back to Login */}
+          <div className="mt-6 text-center">
+            <Link
+              href="/login"
+              className="inline-flex items-center text-base text-lime-300 hover:text-lime-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400 rounded transition-colors"
+              aria-label="Back to login"
+            >
+              <svg
+                className="w-4 h-4 mr-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
               >
-                Apex FX
-              </Link>
-              <div className="w-16 h-16 bg-lime-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <svg
-                  className="w-8 h-8 text-lime-700"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z"
-                  />
-                </svg>
-              </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Forgot password?
-              </h1>
-              <p className="text-base text-gray-700">
-                No worries, we&apos;ll send you reset instructions
-              </p>
-            </div>
-            {/* Error Message */}
-            <div aria-live="polite" aria-atomic="true">
-              {error && (
-                <div
-                  className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg"
-                  role="alert"
-                >
-                  <p className="text-red-600 text-base">{error}</p>
-                </div>
-              )}
-            </div>
-            {/* Reset Form */}
-            <form onSubmit={handleEmailSubmit} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-800 mb-2">
-                  Email address
-                  <Input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(value) => {
-                      setEmail(value);
-                      setError("");
-                    }}
-                    placeholder="Enter your email address"
-                    className="w-full mt-1 text-gray-900 bg-white border border-gray-300 focus:border-lime-500 focus:ring-lime-500"
-                  />
-                </label>
-                <p className="mt-1 text-base text-gray-600">
-                  Enter the email address associated with your account
-                </p>
-              </div>
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-lime-700 hover:bg-lime-800 text-white font-semibold py-3 rounded-lg focus-visible:ring-2 focus-visible:ring-lime-500"
-              >
-                {isLoading ? "Sending..." : "Send reset code"}
-              </Button>
-            </form>
-            {/* Back to Login */}
-            <div className="mt-6 text-center">
-              <Link
-                href="/login"
-                className="inline-flex items-center text-base text-lime-700 hover:text-lime-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 rounded"
-              >
-                <svg
-                  className="w-4 h-4 mr-1"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                  />
-                </svg>
-                Back to login
-              </Link>
-            </div>
-            {/* Help Text */}
-            <div className="mt-8 p-4 bg-lime-50 rounded-lg">
-              <h3 className="text-base font-medium text-gray-900 mb-2">
-                Still having trouble?
-              </h3>
-              <p className="text-base text-gray-700">
-                Contact our support team at{" "}
-                <a
-                  href="mailto:support@apexfx.com"
-                  className="text-lime-700 hover:text-lime-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 rounded"
-                >
-                  support@apexfx.com
-                </a>{" "}
-                for additional help with your account.
-              </p>
-            </div>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+              Back to login
+            </Link>
           </div>
-        </Card>
-      </div>
-    </>
+          {/* Help Text */}
+          <div className="mt-8 p-4 bg-lime-900/80 rounded-lg border border-lime-400">
+            <h3 className="text-base font-medium text-white mb-2">
+              Still having trouble?
+            </h3>
+            <p className="text-base text-lime-100">
+              Contact our support team at{" "}
+              <a
+                href="mailto:support@apexfx.com"
+                className="text-lime-300 hover:text-lime-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400 rounded transition-colors"
+                aria-label="Contact support"
+              >
+                support@apexfx.com
+              </a>{" "}
+              for additional help with your account.
+            </p>
+          </div>
+        </div>
+      </Card>
+    </div>
   );
 }
