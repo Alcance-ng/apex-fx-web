@@ -10,6 +10,7 @@ import {
   ShieldCheckIcon,
   StarIcon,
   UserIcon,
+  ArrowLeftIcon,
 } from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
 
@@ -65,20 +66,7 @@ export default function SuperAdminAdminsPage() {
             onClick={() => router.back()}
             className="flex items-center gap-1 px-3 py-2 rounded-lg bg-[#170a0e]/60 border border-red-900 text-red-200 hover:bg-red-900/20 focus:outline-none focus:ring-2 focus:ring-red-400"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="h-5 w-5 mr-1"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 19.5L8.25 12l7.5-7.5"
-              />
-            </svg>
+            <ArrowLeftIcon className="h-5 w-5 mr-1" />
             Go Back
           </button>
           <h1 className="text-2xl font-bold flex items-center gap-2 text-red-200">
