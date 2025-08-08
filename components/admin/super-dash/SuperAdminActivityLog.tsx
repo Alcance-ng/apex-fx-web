@@ -1,4 +1,55 @@
+interface ActivityItem {
+  color: string;
+  actor: string;
+  action: string;
+  time: string;
+}
+
+function ActivityLogItem({ color, actor, action, time }: ActivityItem) {
+  return (
+    <div className="flex items-start">
+      <div
+        className={`w-2 h-2 ${color} rounded-full mt-2 mr-3`}
+        aria-hidden="true"
+      ></div>
+      <div className="flex-1">
+        <p className="text-sm text-red-100">
+          <span className="font-medium text-white">{actor}</span> {action}
+        </p>
+        <p className="text-xs text-red-300">{time}</p>
+      </div>
+    </div>
+  );
+}
+
 export function SuperAdminActivityLog() {
+  const activities: ActivityItem[] = [
+    {
+      color: "bg-green-400",
+      actor: "Admin John",
+      action: 'uploaded new course "Advanced Forex Strategies"',
+      time: "2 hours ago",
+    },
+    {
+      color: "bg-blue-400",
+      actor: "Admin Sarah",
+      action: "modified user permissions for 15 accounts",
+      time: "4 hours ago",
+    },
+    {
+      color: "bg-yellow-400",
+      actor: "Admin Mike",
+      action: "attempted to access super admin settings",
+      time: "6 hours ago",
+    },
+    {
+      color: "bg-red-400",
+      actor: "System",
+      action: "detected suspicious login attempts from unknown IP",
+      time: "8 hours ago",
+    },
+  ];
+
   return (
     <div className="bg-[#2a0f1a]/70 backdrop-blur-md rounded-lg border border-red-900 shadow">
       <div className="px-6 py-4 border-b border-red-900/60">
@@ -6,58 +57,9 @@ export function SuperAdminActivityLog() {
       </div>
       <div className="p-6">
         <div className="space-y-4">
-          <div className="flex items-start">
-            <div
-              className="w-2 h-2 bg-green-400 rounded-full mt-2 mr-3"
-              aria-hidden="true"
-            ></div>
-            <div className="flex-1">
-              <p className="text-sm text-red-100">
-                <span className="font-medium text-white">Admin John</span>{" "}
-                uploaded new course &quot;Advanced Forex Strategies&quot;
-              </p>
-              <p className="text-xs text-red-300">2 hours ago</p>
-            </div>
-          </div>
-          <div className="flex items-start">
-            <div
-              className="w-2 h-2 bg-blue-400 rounded-full mt-2 mr-3"
-              aria-hidden="true"
-            ></div>
-            <div className="flex-1">
-              <p className="text-sm text-red-100">
-                <span className="font-medium text-white">Admin Sarah</span>{" "}
-                modified user permissions for 15 accounts
-              </p>
-              <p className="text-xs text-red-300">4 hours ago</p>
-            </div>
-          </div>
-          <div className="flex items-start">
-            <div
-              className="w-2 h-2 bg-yellow-400 rounded-full mt-2 mr-3"
-              aria-hidden="true"
-            ></div>
-            <div className="flex-1">
-              <p className="text-sm text-red-100">
-                <span className="font-medium text-white">Admin Mike</span>{" "}
-                attempted to access super admin settings
-              </p>
-              <p className="text-xs text-red-300">6 hours ago</p>
-            </div>
-          </div>
-          <div className="flex items-start">
-            <div
-              className="w-2 h-2 bg-red-400 rounded-full mt-2 mr-3"
-              aria-hidden="true"
-            ></div>
-            <div className="flex-1">
-              <p className="text-sm text-red-100">
-                <span className="font-medium text-white">System</span> detected
-                suspicious login attempts from unknown IP
-              </p>
-              <p className="text-xs text-red-300">8 hours ago</p>
-            </div>
-          </div>
+          {activities.map((item, idx) => (
+            <ActivityLogItem key={idx} {...item} />
+          ))}
         </div>
         <div className="mt-6">
           <a
