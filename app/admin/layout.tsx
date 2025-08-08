@@ -7,5 +7,9 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <AdminAuthProvider>{children}</AdminAuthProvider>;
+  return (
+    <AdminAuthProvider>
+      <div className="font-sans">{children}</div>
+    </AdminAuthProvider>
+  );
 }

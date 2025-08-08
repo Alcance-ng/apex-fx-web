@@ -10,6 +10,7 @@ import { AdminDashboardRecentTransactions } from "@/components/admin/AdminDashbo
 import { AdminLoadingSpinner } from "@/components/admin/AdminLoadingSpinner";
 import { useAdminUsers } from "@/hooks/useAdminUsers";
 import { useAdminTransactions } from "@/hooks/useAdminTransactions";
+import { useAdminPlans } from "@/hooks/useAdminPlans";
 
 export default function AdminDashboardPage() {
   const { session, status, isAdmin } = useAdminAuth();
@@ -30,9 +31,16 @@ export default function AdminDashboardPage() {
     error: txError,
     transactions,
   } = useAdminTransactions(token);
+  const {
+    plans,
+    totalActiveSubscriptions,
+    isLoading: isPlansLoading,
+    error: plansError,
+  } = useAdminPlans(token);
 
-  const isLoading = status === "loading" || isUsersLoading || isTxLoading;
-  const error = usersError || txError;
+  const isLoading =
+    status === "loading" || isUsersLoading || isTxLoading || isPlansLoading;
+  const error = usersError || txError || plansError;
 
   const handleLogout = async () => {
     await adminSignOut();
@@ -74,9 +82,11 @@ export default function AdminDashboardPage() {
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Admin Stats */}
         <AdminDashboardStats
-          totalUsers={analytics.totalUsers}
-          newUsersThisMonth={analytics.newUsers.thisMonth}
-          totalRevenue={totalAmount}
+          totalUsers={analytics?.totalUsers || 0}
+          newUsersThisMonth={analytics?.newUsers?.thisMonth || 0}
+          totalRevenue={totalAmount || 0}
+          activeSubscriptions={totalActiveSubscriptions}
+          totalPlans={plans?.length || 0}
         />
         {/* Quick Actions */}
         <AdminDashboardQuickActions />

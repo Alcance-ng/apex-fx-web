@@ -38,12 +38,16 @@ interface AdminDashboardStatsProps {
   totalUsers: number;
   newUsersThisMonth: number;
   totalRevenue: number;
+  activeSubscriptions: number;
+  totalPlans?: number;
 }
 
 export function AdminDashboardStats({
   totalUsers,
   newUsersThisMonth,
   totalRevenue,
+  activeSubscriptions,
+  totalPlans,
 }: AdminDashboardStatsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -61,8 +65,8 @@ export function AdminDashboardStats({
           <ChartBarIcon className="h-6 w-6 text-green-300" aria-hidden="true" />
         }
         label="Active Subscriptions"
-        value="892"
-        subtext="↗ +8% this month"
+        value={activeSubscriptions}
+        subtext={`Total Plans: ${totalPlans ?? "-"}`}
         subtextColor="text-green-400"
       />
       <StatCard
