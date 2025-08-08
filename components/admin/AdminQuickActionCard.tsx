@@ -8,18 +8,19 @@ interface AdminQuickActionCardProps {
   href?: string;
   onClick?: () => void;
   ariaLabel?: string;
+  hoverClass?: string;
 }
 
 export default function AdminQuickActionCard({
   icon,
   label,
   description,
-  color,
   href,
   onClick,
   ariaLabel,
+  hoverClass = "hover:scale-105 hover:shadow-xl",
 }: AdminQuickActionCardProps) {
-  const baseClass = `flex items-center p-4 border-2 border-dashed border-purple-700 rounded-lg hover:border-${color}-400 hover:bg-${color}-900/40 focus-visible:ring-2 focus-visible:ring-${color}-400 transition-colors outline-none`;
+  const baseClass = `flex items-center p-4 border-2 border-dashed border-purple-700 rounded-lg transition-colors outline-none ${hoverClass}`;
   if (href) {
     return (
       <a

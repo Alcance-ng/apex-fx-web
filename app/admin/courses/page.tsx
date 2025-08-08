@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useAdminCourses } from "@/hooks/useAdminCourses";
 import { useAdminAuth } from "@/hooks/useAdminNextAuth";
 import { Course } from "@/components/admin/AdminCoursesTable";
-import { PlusIcon } from "@heroicons/react/24/solid";
+import { PlusIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
 
 const PAGE_SIZE = 10;
 
@@ -64,6 +64,13 @@ export default function AdminCoursesPage() {
       <header className="bg-[#2d1847]/80 backdrop-blur-md shadow-sm border-b border-purple-900">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-purple-200">All Courses</h1>
+          <button
+            onClick={() => window.history.back()}
+            className="px-3 py-2 rounded-lg bg-purple-900/60 text-purple-200 hover:bg-purple-900/80 focus:outline-none focus:ring-2 focus:ring-purple-400 flex items-center gap-1"
+            aria-label="Go Back"
+          >
+            <ArrowLeftIcon className="h-5 w-5 mr-1" /> Go Back
+          </button>
         </div>
       </header>
       <main className="max-w-7xl mx-auto px-4 py-8">

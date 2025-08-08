@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { LandingHero } from "@/components/landing/LandingHero";
 import { LandingFeatures } from "@/components/landing/LandingFeatures";
+import { LandingCourses } from "@/components/landing/LandingCourses";
 import { LandingPricing } from "@/components/landing/LandingPricing";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 
@@ -22,6 +23,7 @@ export default function LandingPage() {
       </div>
       <LandingHero />
       <LandingFeatures />
+      <LandingCourses />
       <LandingPricing />
       <LandingFooter />
     </div>

@@ -21,11 +21,12 @@ export function AdminDashboardQuickActions() {
                 aria-hidden="true"
               />
             }
-            label="Upload Course"
+            label="Courses"
             description="Add new educational content"
             color="blue"
             href="/admin/courses"
             ariaLabel="Upload Course"
+            hoverClass="hover:scale-105 hover:shadow-xl hover:bg-blue-900/30"
           />
           <AdminQuickActionCard
             icon={
@@ -34,11 +35,12 @@ export function AdminDashboardQuickActions() {
                 aria-hidden="true"
               />
             }
-            label="Manage Users"
+            label="Users"
             description="View and edit user accounts"
             color="green"
             href="/admin/users"
             ariaLabel="Manage Users"
+            hoverClass="hover:scale-105 hover:shadow-xl hover:bg-green-900/30"
           />
           <AdminQuickActionCard
             icon={
@@ -52,6 +54,7 @@ export function AdminDashboardQuickActions() {
             color="purple"
             href="/admin/analytics"
             ariaLabel="View Analytics"
+            hoverClass="hover:scale-105 hover:shadow-xl hover:bg-purple-900/30"
           />
           <AdminQuickActionCard
             icon={
@@ -65,6 +68,7 @@ export function AdminDashboardQuickActions() {
             color="orange"
             onClick={() => alert("Send Signal action")}
             ariaLabel="Send Signal"
+            hoverClass="hover:scale-105 hover:shadow-xl hover:bg-orange-900/30"
           />
         </div>
       </div>
