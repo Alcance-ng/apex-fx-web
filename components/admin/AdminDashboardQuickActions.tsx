@@ -4,6 +4,7 @@ import {
   ChartBarIcon,
   PaperAirplaneIcon,
 } from "@heroicons/react/24/solid";
+import AdminQuickActionCard from "@/components/admin/AdminQuickActionCard";
 
 export function AdminDashboardQuickActions() {
   return (
@@ -13,75 +14,58 @@ export function AdminDashboardQuickActions() {
       </div>
       <div className="p-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <a
+          <AdminQuickActionCard
+            icon={
+              <BookOpenIcon
+                className="h-6 w-6 text-blue-300 mr-3"
+                aria-hidden="true"
+              />
+            }
+            label="Upload Course"
+            description="Add new educational content"
+            color="blue"
             href="/admin/courses"
-            className="flex items-center p-4 border-2 border-dashed border-purple-700 rounded-lg hover:border-blue-400 hover:bg-blue-900/40 focus-visible:ring-2 focus-visible:ring-blue-400 transition-colors outline-none"
-            tabIndex={0}
-            aria-label="Upload Course"
-          >
-            <BookOpenIcon
-              className="h-6 w-6 text-blue-300 mr-3"
-              aria-hidden="true"
-            />
-            <div>
-              <p className="text-sm font-medium text-white">Upload Course</p>
-              <p className="text-xs text-purple-300">
-                Add new educational content
-              </p>
-            </div>
-          </a>
-
-          <a
+            ariaLabel="Upload Course"
+          />
+          <AdminQuickActionCard
+            icon={
+              <UserIcon
+                className="h-6 w-6 text-green-300 mr-3"
+                aria-hidden="true"
+              />
+            }
+            label="Manage Users"
+            description="View and edit user accounts"
+            color="green"
             href="/admin/users"
-            className="flex items-center p-4 border-2 border-dashed border-purple-700 rounded-lg hover:border-green-400 hover:bg-green-900/40 focus-visible:ring-2 focus-visible:ring-green-400 transition-colors outline-none"
-            tabIndex={0}
-            aria-label="Manage Users"
-          >
-            <UserIcon
-              className="h-6 w-6 text-green-300 mr-3"
-              aria-hidden="true"
-            />
-            <div>
-              <p className="text-sm font-medium text-white">Manage Users</p>
-              <p className="text-xs text-purple-300">
-                View and edit user accounts
-              </p>
-            </div>
-          </a>
-
-          <a
+            ariaLabel="Manage Users"
+          />
+          <AdminQuickActionCard
+            icon={
+              <ChartBarIcon
+                className="h-6 w-6 text-purple-300 mr-3"
+                aria-hidden="true"
+              />
+            }
+            label="View Analytics"
+            description="Check performance metrics"
+            color="purple"
             href="/admin/analytics"
-            className="flex items-center p-4 border-2 border-dashed border-purple-700 rounded-lg hover:border-purple-400 hover:bg-purple-900/40 focus-visible:ring-2 focus-visible:ring-purple-400 transition-colors outline-none"
-            tabIndex={0}
-            aria-label="View Analytics"
-          >
-            <ChartBarIcon
-              className="h-6 w-6 text-purple-300 mr-3"
-              aria-hidden="true"
-            />
-            <div>
-              <p className="text-sm font-medium text-white">View Analytics</p>
-              <p className="text-xs text-purple-300">
-                Check performance metrics
-              </p>
-            </div>
-          </a>
-
-          <button
-            className="flex items-center p-4 border-2 border-dashed border-purple-700 rounded-lg hover:border-orange-400 hover:bg-orange-900/40 focus-visible:ring-2 focus-visible:ring-orange-400 transition-colors outline-none"
-            aria-label="Send Signal"
-          >
-            <PaperAirplaneIcon
-              className="h-6 w-6 text-orange-300 mr-3"
-              aria-hidden="true"
-            />
-            <div>
-              <p className="text-sm font-medium text-white">Send Signal</p>
-              <p className="text-xs text-purple-300">
-                Broadcast trading signal
-              </p>
-            </div>
-          </button>
+            ariaLabel="View Analytics"
+          />
+          <AdminQuickActionCard
+            icon={
+              <PaperAirplaneIcon
+                className="h-6 w-6 text-orange-300 mr-3"
+                aria-hidden="true"
+              />
+            }
+            label="Send Signal"
+            description="Broadcast trading signal"
+            color="orange"
+            onClick={() => alert("Send Signal action")}
+            ariaLabel="Send Signal"
+          />
         </div>
       </div>
     </div>

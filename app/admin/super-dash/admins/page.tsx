@@ -60,20 +60,22 @@ export default function SuperAdminAdminsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#170a0e] via-[#2a0f1a] to-[#3b0f24] text-white px-4 py-8">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-6 flex items-center gap-4">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="flex items-center gap-1 px-3 py-2 rounded-lg bg-[#170a0e]/60 border border-red-900 text-red-200 hover:bg-red-900/20 focus:outline-none focus:ring-2 focus:ring-red-400"
-          >
-            <ArrowLeftIcon className="h-5 w-5 mr-1" />
-            Go Back
-          </button>
-          <h1 className="text-2xl font-bold flex items-center gap-2 text-red-200">
-            <UserGroupIcon className="h-7 w-7 text-blue-300" />
-            Manage Admins
-          </h1>
-          <p className="text-sm text-red-300 mt-1">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:gap-4 gap-2">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="flex items-center gap-1 px-3 py-2 rounded-lg bg-[#170a0e]/60 border border-red-900 text-red-200 hover:bg-red-900/20 focus:outline-none focus:ring-2 focus:ring-red-400"
+            >
+              <ArrowLeftIcon className="h-5 w-5 mr-1" />
+              Go Back
+            </button>
+            <h1 className="text-2xl font-bold flex items-center gap-2 text-red-200">
+              <UserGroupIcon className="h-7 w-7 text-blue-300" />
+              Manage Admins
+            </h1>
+          </div>
+          <p className="text-sm text-red-300 mt-1 sm:mt-0 sm:ml-4">
             View and manage all system admins. You can search, filter, edit, or
             delete admins.
           </p>
