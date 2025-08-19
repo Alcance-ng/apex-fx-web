@@ -144,6 +144,14 @@ class ApiClient {
       data,
     });
   }
+
+  // Generic helper to POST to an endpoint using the internal request helper
+  async post<T = unknown>(endpoint: string, data?: unknown) {
+    return this.request<T>(endpoint, {
+      method: "POST",
+      data,
+    });
+  }
 }
 
 export const apiClient = new ApiClient();
