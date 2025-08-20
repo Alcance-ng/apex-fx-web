@@ -66,7 +66,7 @@ export function AdminDashboardQuickActions() {
             label="Send Signal"
             description="Broadcast trading signal"
             color="orange"
-            onClick={() => alert("Send Signal action")}
+            href="/admin/signal"
             ariaLabel="Send Signal"
             hoverClass="hover:scale-105 hover:shadow-xl hover:bg-orange-900/30"
           />
