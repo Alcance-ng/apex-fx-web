@@ -7,6 +7,7 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { StatsCards } from "@/components/dashboard/StatsCards";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
+import { RecentSignalUpdates } from "@/components/dashboard/RecentSignalUpdates";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 export default function UserDashboardPage() {
@@ -45,7 +46,10 @@ export default function UserDashboardPage() {
         <div className="space-y-8">
           <StatsCards />
           <QuickActions />
-          <RecentTransactions />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <RecentTransactions />
+            <RecentSignalUpdates />
+          </div>
         </div>
       </section>
     </div>
