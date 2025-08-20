@@ -13,10 +13,7 @@ export default function AdminUsersPage() {
   const token = session?.accessToken;
   const { users, isLoading, error } = useAdminUsers(token);
 
-  const handleLogout = async () => {
-    await adminSignOut();
-    router.push("/admin/login");
-  };
+  // Removed unused handleLogout function (lint warning)
 
   if (status === "loading" || isLoading) {
     return <AdminLoadingSpinner text="Loading users..." />;

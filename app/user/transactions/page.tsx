@@ -14,7 +14,7 @@ export default function UserTransactionsPage() {
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
   const [q, setQ] = useState("");
 
-  const { transactions: allTransactions, total: totalCount, isLoading, error } = useUserTransactions(token);
+  const { transactions: allTransactions, /* total: totalCount */ isLoading, error } = useUserTransactions(token); // removed unused totalCount (lint warning)
 
   const filtered = useMemo(() => {
     const t = (allTransactions || []).filter((tx) => (statusFilter ? tx.status === statusFilter : true));

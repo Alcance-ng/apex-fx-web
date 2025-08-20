@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import Head from "next/head";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
 
-export default function AdminVerifyEmailPage() {
+function AdminVerifyEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams?.get("email") ?? "";
@@ -209,5 +209,19 @@ export default function AdminVerifyEmailPage() {
         </Card>
       </div>
     </>
+  );
+}
+
+export default function AdminVerifyEmailPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-900 via-emerald-900 to-lime-900 p-4 text-white">
+          Loading admin verification page...
+        </div>
+      }
+    >
+      <AdminVerifyEmailContent />
+    </Suspense>
   );
 }
