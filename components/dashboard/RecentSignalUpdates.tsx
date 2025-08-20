@@ -158,7 +158,7 @@ export function RecentSignalUpdates() {
 
             <div className="px-6 pb-6">
               {selected.img ? (
-                <img src={selected.img} alt="Signal image" className="w-full h-80 object-contain bg-slate-900 rounded" />
+                <img src={selected.img} alt="Signal image" className="w-full h-[40vh] md:h-96 max-h-[70vh] object-contain bg-slate-900 rounded" />
               ) : (
                 <div className="w-full h-80 bg-slate-900 rounded flex items-center justify-center">
                   <SignalIcon className="h-16 w-16" />

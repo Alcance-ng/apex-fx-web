@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { RecentSignalUpdates } from "@/components/dashboard/RecentSignalUpdates";
+import { UserSignals } from "@/components/dashboard/UserSignals";
 
 export default function UserSignalsPage() {
   const { data: session, status } = useSession();
@@ -27,8 +27,17 @@ export default function UserSignalsPage() {
     <div className="min-h-screen bg-gradient-to-br from-green-900 via-emerald-900 to-lime-900">
       <DashboardHeader user={session.user} onLogout={() => router.push("/")} />
       <section className="max-w-4xl mx-auto px-4 py-8">
-       
-        <RecentSignalUpdates />
+        <div className="mb-4">
+          <button
+            type="button"
+            onClick={() => router.push("/user/dashboard")}
+            className="text-sm text-lime-200 hover:text-white inline-flex items-center gap-2"
+          >
+            ← Back to dashboard
+          </button>
+        </div>
+
+        <UserSignals />
       </section>
     </div>
   );
