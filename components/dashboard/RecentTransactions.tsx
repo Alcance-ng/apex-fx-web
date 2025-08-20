@@ -1,10 +1,9 @@
-
 import { BanknotesIcon, ArrowTrendingUpIcon } from "@heroicons/react/24/solid";
 import { useSession } from "next-auth/react";
 import { useUserTransactions } from "@/hooks/useUserTransactions";
 import React from "react";
 
-export function RecentTransaction() {
+export function RecentTransactions() {
   const { data: session } = useSession();
   const token = session?.accessToken;
   const { transactions, isLoading, error } = useUserTransactions(token);
@@ -28,7 +27,7 @@ export function RecentTransaction() {
       <div className="px-6 py-4 border-b border-white/10">
         <h2 className="text-lg font-medium text-white">Recent Transactions</h2>
       </div>
-  <div className="p-6">
+      <div className="p-6">
         {isLoading ? (
           <div className="text-white">Loading...</div>
         ) : error ? (
@@ -54,7 +53,7 @@ export function RecentTransaction() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-white leading-tight">
-                          {tx.narration} - {"₦" + (tx.amount || 0).toLocaleString()}
+                        {tx.narration} - {"₦" + (tx.amount || 0).toLocaleString()}
                       </p>
                       <p className="text-xs text-lime-200">
                         {new Date(tx.createdAt).toLocaleString()}
@@ -66,11 +65,11 @@ export function RecentTransaction() {
             )}
           </ul>
         )}
-          <div className="mt-4 text-right">
-            <a href="/transactions" className="text-sm text-lime-200 hover:underline">
-              View all
-            </a>
-          </div>
+        <div className="mt-4 text-right">
+          <a href="/user/transactions" className="text-sm text-lime-200 hover:underline">
+            View all
+          </a>
+        </div>
       </div>
     </div>
   );

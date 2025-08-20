@@ -11,7 +11,7 @@ import { Card } from "@/components/ui/Card";
 export default function AdminVerifyEmailPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const email = searchParams.get("email") || "";
+  const email = searchParams?.get("email") ?? "";
 
   const [verificationCode, setVerificationCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);

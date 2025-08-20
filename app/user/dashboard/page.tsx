@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { StatsCards } from "@/components/dashboard/StatsCards";
 import { QuickActions } from "@/components/dashboard/QuickActions";
-import { RecentActivity } from "@/components/dashboard/RecentActivity";
+import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 export default function UserDashboardPage() {
@@ -45,7 +45,7 @@ export default function UserDashboardPage() {
         <div className="space-y-8">
           <StatsCards />
           <QuickActions />
-          <RecentActivity />
+          <RecentTransactions />
         </div>
       </section>
     </div>
