@@ -145,7 +145,12 @@ class ApiClient {
     });
   }
 
-  // Generic helper to POST to an endpoint using the internal request helper
+  // Generic helper to GET from an endpoint
+  async get<T = unknown>(endpoint: string) {
+    return this.request<T>(endpoint);
+  }
+
+  // Generic helper to POST to an endpoint
   async post<T = unknown>(endpoint: string, data?: unknown) {
     return this.request<T>(endpoint, {
       method: "POST",

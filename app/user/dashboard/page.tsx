@@ -47,8 +47,9 @@ export default function UserDashboardPage() {
           <StatsCards />
           <QuickActions />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <RecentTransactions />
             <RecentSignalUpdates />
+            <RecentTransactions />
+           
           </div>
         </div>
       </section>
