@@ -5,6 +5,7 @@ import useSWR from "swr";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { SignalIcon } from "@/components/admin/super-dash/SignalIcon";
+import { signOut } from "next-auth/react";
 
 // Signal shape coming from the backend
 export interface SignalItem {
@@ -34,6 +35,11 @@ async function fetchUserMe(url: string, token: string): Promise<UserMeResponse> 
     },
     credentials: "include",
   });
+  if (res.status === 401) {
+    console.log("401 Unauthorized - Signing out user");
+    await signOut({ callbackUrl: "/login" });
+    throw new Error("Unauthorized");
+  }
   if (!res.ok) throw new Error("Failed to fetch user info");
   return res.json();
 }
@@ -45,6 +51,11 @@ async function fetchSignalUpdates(url: string, token: string): Promise<SignalUpd
     },
     credentials: "include",
   });
+  if (res.status === 401) {
+    console.log("401 Unauthorized - Signing out user");
+    await signOut({ callbackUrl: "/login" });
+    throw new Error("Unauthorized");
+  }
   if (!res.ok) throw new Error("Failed to fetch signal updates");
   return res.json();
 }
@@ -65,7 +76,7 @@ export function RecentSignalUpdates() {
     ([url, token]: [string, string]) => fetchSignalUpdates(url, token)
   );
 
-  const signals = updatesData || [];
+  const signals = (updatesData || []).slice(0, 3);
 
   // Prepare entries: each signal yields a "before" entry, and an "after" entry only if fileUrlAfter exists
   const entries: Array<{
@@ -146,7 +157,15 @@ export function RecentSignalUpdates() {
                 >
                   {e.img ? (
                     imageErrors.has(e.img) ? (
-                      <img src={e.img} alt={`${e.kind} image`} className="w-full h-full object-cover" onError={() => handleImageError(e.img!)} />
+                      <Image
+                        src={e.img}
+                        alt={`${e.kind} image`}
+                        width={56}
+                        height={56}
+                        className="w-full h-full object-cover"
+                        unoptimized
+                        onError={() => handleImageError(e.img!)}
+                      />
                     ) : (
                       <Image 
                         src={e.img} 
@@ -214,7 +233,15 @@ export function RecentSignalUpdates() {
               {selected.img ? (
                 imageErrors.has(selected.img) ? (
                   <div className="w-full h-[40vh] md:h-96 max-h-[70vh] bg-slate-900 rounded overflow-hidden flex items-center justify-center">
-                    <img src={selected.img} alt="Signal image" className="max-w-full max-h-full object-contain" onError={() => handleImageError(selected.img!)} />
+                    <Image
+                      src={selected.img}
+                      alt="Signal image"
+                      width={800}
+                      height={600}
+                      className="max-w-full max-h-full object-contain"
+                      unoptimized
+                      onError={() => handleImageError(selected.img!)}
+                    />
                   </div>
                 ) : (
                   <div className="relative w-full h-[40vh] md:h-96 max-h-[70vh] bg-slate-900 rounded overflow-hidden">

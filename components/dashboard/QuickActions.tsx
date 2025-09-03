@@ -8,14 +8,14 @@ import Link from "next/link";
 
 const actions = [
   {
-    href: "/courses",
+    href: "/user/courses",
     icon: AcademicCapIcon,
     label: "Browse Courses",
     iconColor: "text-lime-300",
     border: "border-white/10",
   },
   {
-    href: "/subscriptions",
+    href: "/user/subscriptions",
     icon: ChartBarIcon,
     label: "Manage Subscriptions",
     iconColor: "text-lime-300",
@@ -23,7 +23,7 @@ const actions = [
   },
 
   {
-    href: "/transactions",
+    href: "/user/transactions",
     icon: CreditCardIcon,
     label: "View Transactions",
     iconColor: "text-lime-300",

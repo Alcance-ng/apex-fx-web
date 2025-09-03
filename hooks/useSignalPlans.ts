@@ -1,16 +1,6 @@
 import useSWR from "swr";
+import { signOut } from "next-auth/react";
 import { APP_CONFIG } from "@/lib/constants";
-
-async function fetchSignalPlans(url: string, token: string) {
-  const res = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    credentials: "include",
-  });
-  if (!res.ok) throw new Error("Failed to fetch plans");
-  return res.json();
-}
 
 export interface SignalPlan {
   id: string;
@@ -21,10 +11,26 @@ export interface SignalPlan {
   description: string | null;
 }
 
-interface SignalPlansResponse {
+export interface SignalPlansResponse {
   status: boolean;
   message: string;
   data: SignalPlan[];
+}
+
+async function fetchSignalPlans(url: string, token: string) {
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    credentials: "include",
+  });
+  if (res.status === 401) {
+    console.log("401 Unauthorized - Signing out user");
+    await signOut({ callbackUrl: "/login" });
+    throw new Error("Unauthorized");
+  }
+  if (!res.ok) throw new Error("Failed to fetch signal plans");
+  return res.json();
 }
 
 export function useSignalPlans(token?: string) {

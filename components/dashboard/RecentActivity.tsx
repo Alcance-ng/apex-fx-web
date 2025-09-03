@@ -67,7 +67,7 @@ export function RecentTransaction() {
           </ul>
         )}
           <div className="mt-4 text-right">
-            <a href="/transactions" className="text-sm text-lime-200 hover:underline">
+            <a href="/user/transactions" className="text-sm text-lime-200 hover:underline">
               View all
             </a>
           </div>

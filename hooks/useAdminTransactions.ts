@@ -1,4 +1,5 @@
 import useSWR from "swr";
+import { signOut } from "next-auth/react";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
@@ -26,6 +27,11 @@ async function fetchAdminTransactions(url: string, token: string) {
     },
     credentials: "include",
   });
+  if (res.status === 401) {
+    console.log("401 Unauthorized - Signing out user");
+    await signOut({ callbackUrl: "/login" });
+    throw new Error("Unauthorized");
+  }
   if (!res.ok) throw new Error("Failed to fetch transactions");
   return res.json();
 }

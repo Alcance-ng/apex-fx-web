@@ -25,7 +25,7 @@ export default function UserSignalsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-900 via-emerald-900 to-lime-900">
-      <DashboardHeader user={session.user} onLogout={() => router.push("/")} />
+      <DashboardHeader user={session.user} />
       <section className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-4">
           <button

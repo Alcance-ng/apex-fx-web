@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 
@@ -61,6 +61,13 @@ export default function ChangePasswordModal({
           body: JSON.stringify({ oldPassword, newPassword }),
         }
       );
+      if (res.status === 401) {
+        console.log("401 Unauthorized - Signing out user");
+        await signOut({ callbackUrl: "/login" });
+        setError("Your session has expired. Please log in again.");
+        setIsLoading(false);
+        return;
+      }
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         setError(

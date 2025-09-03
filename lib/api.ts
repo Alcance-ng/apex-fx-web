@@ -2,13 +2,26 @@ import { APP_CONFIG } from "./constants";
 import type { ApiResponse, RegisterRequest } from "./types";
 import axios from "axios";
 import type { AxiosRequestConfig } from "axios";
-import { getSession } from "next-auth/react";
+import { getSession, signOut } from "next-auth/react";
 
 class ApiClient {
   private baseUrl: string;
 
   constructor() {
     this.baseUrl = APP_CONFIG.api.baseUrl;
+    
+    // Add response interceptor to handle 401 errors
+    axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
+          // Token expired or invalid, sign out the user
+          console.log("401 Unauthorized - Signing out user");
+          signOut({ callbackUrl: "/login" });
+        }
+        return Promise.reject(error);
+      }
+    );
   }
 
   private async request<T>(

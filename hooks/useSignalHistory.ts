@@ -1,5 +1,6 @@
 import useSWR from "swr";
 import { APP_CONFIG } from "@/lib/constants";
+import { signOut } from "next-auth/react";
 
 export interface SignalHistoryItem {
   id: string;
@@ -24,6 +25,11 @@ async function fetchSignalHistory(url: string, token: string) {
     },
     credentials: "include",
   });
+  if (res.status === 401) {
+    console.log("401 Unauthorized - Signing out user");
+    await signOut({ callbackUrl: "/login" });
+    throw new Error("Unauthorized");
+  }
   if (!res.ok) throw new Error("Failed to fetch signal history");
   return res.json();
 }
