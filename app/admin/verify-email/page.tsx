@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
+import { apiClient } from "@/lib/api";
 
 function AdminVerifyEmailContent() {
   const router = useRouter();
@@ -46,18 +47,29 @@ function AdminVerifyEmailContent() {
     setIsLoading(true);
     setError("");
     try {
-      // TODO: Replace with actual API call
-      console.log("Admin verification attempt:", {
+      const payload = {
         email,
         code: verificationCode,
-      });
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      };
+      console.log("Admin verify payload:", payload);
+      const response = await apiClient.verifyEmail(payload);
+      console.log("Admin verify response:", response);
+      if (response?.error) {
+        setError(
+          response?.message || "Invalid verification code. Please try again."
+        );
+        return;
+      }
       setSuccess("Email verified successfully! Redirecting to admin login...");
       setTimeout(() => {
         router.push("/admin/login?verified=true");
       }, 2000);
-    } catch {
-      setError("Invalid verification code. Please try again.");
+    } catch (err) {
+      const errorObj = err as { response?: { data?: { message?: string } } };
+      setError(
+        errorObj?.response?.data?.message ||
+          "Invalid verification code. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -69,13 +81,28 @@ function AdminVerifyEmailContent() {
     setError("");
     setSuccess("");
     try {
-      // TODO: Replace with actual API call
-      console.log("Resending admin verification code to:", email);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const payload = {
+        name: "", // Name not needed for resend, backend should ignore
+        email,
+        password: "", // Password not needed for resend, backend should ignore
+      };
+      console.log("Resend admin verification payload:", payload);
+      const response = await apiClient.registerUser(payload);
+      console.log("Resend admin verification response:", response);
+      if (response?.error) {
+        setError(
+          response?.message || "Failed to resend verification code. Please try again."
+        );
+        return;
+      }
       setSuccess("Verification code sent! Check your email.");
       setTimeLeft(60);
-    } catch {
-      setError("Failed to resend verification code. Please try again.");
+    } catch (err) {
+      const errorObj = err as { response?: { data?: { message?: string } } };
+      setError(
+        errorObj?.response?.data?.message ||
+          "Failed to resend verification code. Please try again."
+      );
     } finally {
       setIsResending(false);
     }

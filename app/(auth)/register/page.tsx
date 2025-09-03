@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import axios from "axios";
 
 export default function RegisterPage() {
@@ -85,32 +85,17 @@ export default function RegisterPage() {
     try {
       // Register the user directly with the backend
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/auth/register`,
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/users`,
         {
           email: formData.email,
           password: formData.password,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          name: `${formData.firstName} ${formData.lastName}`.trim(),
         }
       );
 
-      if (response.data?.success) {
-        // Registration successful, now sign them in
-        const signInResult = await signIn("credentials", {
-          redirect: false,
-          email: formData.email,
-          password: formData.password,
-        });
-
-        if (signInResult?.error) {
-          setError(
-            "Registration successful, but login failed. Please try logging in manually."
-          );
-          router.push("/login");
-        } else if (signInResult?.ok) {
-          // Give NextAuth time to update the session
-          window.location.reload();
-        }
+      if (response.status === 201 && response.data?.id) {
+        // Registration successful, redirect to verify email page with email parameter
+        router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
       } else {
         setError(
           response.data?.message || "Registration failed. Please try again."

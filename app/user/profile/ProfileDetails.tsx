@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useState } from "react";
 import ChangePasswordModal from "./ChangePasswordModal";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 
 export default function ProfileDetails() {
   const { data: session, status } = useSession();
@@ -98,6 +99,14 @@ export default function ProfileDetails() {
             aria-controls="change-password-modal"
           >
             Change Password
+          </button>
+          <button
+            type="button"
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-center font-semibold shadow transition-all motion-safe:hover:scale-105 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+            aria-label="Sign out of your account"
+          >
+            Logout
           </button>
         </div>
         <ChangePasswordModal
