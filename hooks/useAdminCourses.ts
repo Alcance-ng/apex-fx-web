@@ -5,17 +5,16 @@ const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
 export interface Course {
   id: string;
-  title: string;
-  instructor?: string;
-  instructorName?: string;
-  status?: string;
-  createdAt?: string;
-  // ...other fields as needed
+  name: string;
+  description: string;
+  amount: number;
+  discount: number;
+  imageUrl?: string;
+  duration: string;
+  enrollCount: number;
 }
 
 export interface AdminCoursesResponse {
-  status: boolean;
-  message: string;
   courses: Course[];
   meta?: {
     total: number;
@@ -44,13 +43,18 @@ async function fetchAdminCourses(url: string, token: string) {
 
 export function useAdminCourses(token?: string) {
   const shouldFetch = !!token && !!BASE_URL;
-  const { data, error, isLoading } = useSWR<AdminCoursesResponse, Error>(
+  const { data, error, isLoading } = useSWR<Course[] | AdminCoursesResponse, Error>(
     shouldFetch ? [`${BASE_URL}/courses`, token] : null,
     ([url, token]: [string, string]) => fetchAdminCourses(url, token)
   );
+
+  // Handle both response formats: direct array or object with courses property
+  const courses = Array.isArray(data) ? data : data?.courses || [];
+  const meta = Array.isArray(data) ? undefined : data?.meta;
+
   return {
-    courses: data?.courses || [],
-    meta: data?.meta,
+    courses,
+    meta,
     isLoading,
     error,
   };

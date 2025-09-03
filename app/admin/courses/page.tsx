@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { useAdminCourses } from "@/hooks/useAdminCourses";
+import { useState, useRef } from "react";
+import { useAdminCourses, Course } from "@/hooks/useAdminCourses";
 import { useAdminAuth } from "@/hooks/useAdminNextAuth";
-import { Course } from "@/components/admin/AdminCoursesTable";
 import { PlusIcon, ArrowLeftIcon } from "@heroicons/react/24/solid";
 
 const PAGE_SIZE = 10;
@@ -13,24 +12,31 @@ export default function AdminCoursesPage() {
   const token = session?.accessToken;
   const { courses } = useAdminCourses(token);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [newCourse, setNewCourse] = useState({
-    title: "",
-    instructor: "",
-    status: "active",
+    name: "",
+    description: "",
+    price: "",
+    discount: "0",
+    accessLink: "",
+    accessCode: "",
+    imageUrl: "",
+    duration: "",
   });
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [createSuccess, setCreateSuccess] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Filter by search and status
+  // Filter by search
   const filteredCourses = courses.filter((c: Course) => {
-    const status = c.status?.toLowerCase();
-    const filter = statusFilter.toLowerCase();
     return (
-      (filter === "all" || status === filter) &&
-      (c.title.toLowerCase().includes(search.toLowerCase()) ||
-        c.instructor?.toLowerCase().includes(search.toLowerCase()) ||
-        c.instructorName?.toLowerCase().includes(search.toLowerCase()))
+      c.name.toLowerCase().includes(search.toLowerCase()) ||
+      c.description.toLowerCase().includes(search.toLowerCase()) ||
+      c.duration.toLowerCase().includes(search.toLowerCase())
     );
   });
 
@@ -52,11 +58,110 @@ export default function AdminCoursesPage() {
       alert(`Delete course ${courseId}`);
     }
   };
-  const handleCreateCourse = () => {
-    // TODO: Implement backend call to create course
-    alert(`Course created: ${newCourse.title}`);
-    setShowModal(false);
-    setNewCourse({ title: "", instructor: "", status: "active" });
+  const resetForm = () => {
+    setNewCourse({
+      name: "",
+      description: "",
+      price: "",
+      discount: "0",
+      accessLink: "",
+      accessCode: "",
+      imageUrl: "",
+      duration: "",
+    });
+    setUploadProgress(0);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleCreateCourse = async () => {
+    if (!token) return;
+    setCreating(true);
+    setCreateError(null);
+    setCreateSuccess(null);
+    try {
+      const payload = {
+        name: newCourse.name.trim(),
+        description: newCourse.description.trim(),
+        price: Number(newCourse.price),
+        discount: Number(newCourse.discount) || 0,
+        accessLink: newCourse.accessLink.trim() || undefined,
+        accessCode: newCourse.accessCode.trim() || undefined,
+        imageUrl: newCourse.imageUrl.trim() || undefined,
+        duration: newCourse.duration.trim(),
+      };
+
+      const resp = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/courses`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!resp.ok) {
+        if (resp.status === 401) {
+          setCreateError('Unauthorized');
+        } else {
+          const data = await resp.json().catch(() => ({}));
+          setCreateError(data.message || `Failed (${resp.status})`);
+        }
+        return;
+      }
+      setCreateSuccess('Course created successfully');
+      resetForm();
+      setTimeout(() => setShowModal(false), 1200);
+    } catch (e) {
+      setCreateError((e as Error).message);
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const handleUploadImage = async (file: File) => {
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+    if (!cloudName || !uploadPreset) {
+      setCreateError('Cloudinary not configured');
+      return;
+    }
+    setUploading(true);
+    setUploadProgress(0);
+    setCreateError(null);
+  try {
+      const form = new FormData();
+      form.append('file', file);
+      form.append('upload_preset', uploadPreset);
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', `https://api.cloudinary.com/v1_1/${cloudName}/upload`);
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+          setUploadProgress(Math.round((e.loaded / e.total) * 100));
+        }
+      };
+  interface CloudinaryUploadResp { secure_url: string }
+  const uploadPromise: Promise<CloudinaryUploadResp> = new Promise((resolve, reject) => {
+        xhr.onreadystatechange = () => {
+          if (xhr.readyState === 4) {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              try { resolve(JSON.parse(xhr.responseText)); } catch (err) { reject(err); }
+            } else {
+              reject(new Error('Upload failed'));
+            }
+          }
+        };
+        xhr.onerror = () => reject(new Error('Upload error'));
+      });
+      xhr.send(form);
+      const result = await uploadPromise;
+  setNewCourse(c => ({ ...c, imageUrl: result.secure_url }));
+  setUploadProgress(100);
+  setCreateSuccess('Image uploaded');
+    } catch (e) {
+      setCreateError((e as Error).message || 'Upload failed');
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -94,37 +199,28 @@ export default function AdminCoursesPage() {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              placeholder="Search by title or instructor..."
+              placeholder="Search by course name, description, or duration..."
               className="px-3 py-2 rounded bg-[#1a1333] text-white border border-purple-900 focus-visible:ring-2 focus-visible:ring-purple-400"
             />
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
-                setPage(1);
-              }}
-              className="px-3 py-2 rounded bg-[#1a1333] text-white border border-purple-900 focus-visible:ring-2 focus-visible:ring-purple-400"
-            >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
           </div>
           <div className="overflow-x-auto rounded-lg">
             <table className="min-w-full divide-y divide-purple-900 bg-[#2d1847]/60 rounded-lg">
               <thead>
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-purple-300">
-                    Title
+                    Course Name
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-purple-300">
-                    Instructor
+                    Description
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-purple-300">
-                    Status
+                    Price
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-purple-300">
-                    Created
+                    Duration
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-purple-300">
+                    Enrollments
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-purple-300">
                     Actions
@@ -132,51 +228,62 @@ export default function AdminCoursesPage() {
                 </tr>
               </thead>
               <tbody>
-                {paginatedCourses.map((c: Course) => (
-                  <tr
-                    key={c.id}
-                    className="border-b border-purple-900 hover:bg-purple-900/30 transition-colors"
-                  >
-                    <td className="px-4 py-3 text-sm text-white font-medium">
-                      {c.title}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-purple-200">
-                      {c.instructor || c.instructorName || "-"}
-                    </td>
-                    <td className="px-4 py-3 text-sm">
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                          c.status === "active"
-                            ? "bg-green-900/60 text-green-300"
-                            : "bg-yellow-900/60 text-yellow-300"
-                        }`}
-                      >
-                        {c.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-purple-200">
-                      {c.createdAt
-                        ? new Date(c.createdAt).toLocaleString()
-                        : "-"}
-                    </td>
-                    <td className="px-4 py-3 text-sm flex gap-2">
-                      <button
-                        onClick={() => handleEdit(c.id)}
-                        className="p-1 rounded hover:bg-blue-900/30 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        aria-label={`Edit ${c.title}`}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(c.id)}
-                        className="p-1 rounded hover:bg-red-900/30 focus:outline-none focus:ring-2 focus:ring-red-400"
-                        aria-label={`Delete ${c.title}`}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {paginatedCourses.map((c: Course) => {
+                  const discountedPrice = c.amount - (c.amount * c.discount) / 100;
+                  const hasDiscount = c.discount > 0;
+
+                  return (
+                    <tr
+                      key={c.id}
+                      className="border-b border-purple-900 hover:bg-purple-900/30 transition-colors"
+                    >
+                      <td className="px-4 py-3 text-sm text-white font-medium">
+                        {c.name}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-purple-200 max-w-xs truncate">
+                        {c.description}
+                      </td>
+                      <td className="px-4 py-3 text-sm">
+                        {hasDiscount ? (
+                          <div className="flex flex-col">
+                            <span className="text-green-300 font-bold">
+                              ${discountedPrice.toFixed(2)}
+                            </span>
+                            <span className="text-red-300 line-through text-xs">
+                              ${c.amount.toFixed(2)}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-white font-bold">
+                            ${c.amount.toFixed(2)}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-purple-200">
+                        {c.duration}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-blue-300 font-bold">
+                        {c.enrollCount}
+                      </td>
+                      <td className="px-4 py-3 text-sm flex gap-2">
+                        <button
+                          onClick={() => handleEdit(c.id)}
+                          className="p-1 rounded hover:bg-blue-900/30 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          aria-label={`Edit ${c.name}`}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(c.id)}
+                          className="p-1 rounded hover:bg-red-900/30 focus:outline-none focus:ring-2 focus:ring-red-400"
+                          aria-label={`Delete ${c.name}`}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -226,8 +333,14 @@ export default function AdminCoursesPage() {
               </button>
             </div>
             <p className="text-sm text-purple-300 mb-6">
-              Fill in the details below to add a new course to the system.
+              Provide course details. All required fields must be completed.
             </p>
+            {createError && (
+              <div className="mb-4 text-sm text-red-300 bg-red-900/40 border border-red-800 px-3 py-2 rounded">{createError}</div>
+            )}
+            {createSuccess && (
+              <div className="mb-4 text-sm text-green-300 bg-green-900/30 border border-green-800 px-3 py-2 rounded">{createSuccess}</div>
+            )}
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -237,47 +350,144 @@ export default function AdminCoursesPage() {
             >
               <input
                 type="text"
-                value={newCourse.title}
-                onChange={(e) =>
-                  setNewCourse((c) => ({ ...c, title: e.target.value }))
-                }
-                placeholder="Course Title"
+                value={newCourse.name}
+                onChange={(e) => setNewCourse(c => ({ ...c, name: e.target.value }))}
+                placeholder="Course Name"
+                required
+                className="px-3 py-2 rounded-lg bg-[#1a1333]/60 border border-purple-900 text-white placeholder:text-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400"
+              />
+              <textarea
+                value={newCourse.description}
+                onChange={(e) => setNewCourse(c => ({ ...c, description: e.target.value }))}
+                placeholder="Description"
+                rows={3}
+                required
+                className="px-3 py-2 rounded-lg bg-[#1a1333]/60 border border-purple-900 text-white placeholder:text-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400 resize-y"
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-purple-300 mb-1">Price (NGN)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={newCourse.price}
+                    onChange={(e) => setNewCourse(c => ({ ...c, price: e.target.value }))}
+                    placeholder="50000"
+                    required
+                    className="w-full px-3 py-2 rounded-lg bg-[#1a1333]/60 border border-purple-900 text-white placeholder:text-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-purple-300 mb-1">Discount (%)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={newCourse.discount}
+                    onChange={(e) => setNewCourse(c => ({ ...c, discount: e.target.value }))}
+                    placeholder="10"
+                    className="w-full px-3 py-2 rounded-lg bg-[#1a1333]/60 border border-purple-900 text-white placeholder:text-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  />
+                </div>
+              </div>
+              <input
+                type="text"
+                value={newCourse.duration}
+                onChange={(e) => setNewCourse(c => ({ ...c, duration: e.target.value }))}
+                placeholder="Duration (e.g. 4 weeks)"
                 required
                 className="px-3 py-2 rounded-lg bg-[#1a1333]/60 border border-purple-900 text-white placeholder:text-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400"
               />
               <input
-                type="text"
-                value={newCourse.instructor}
-                onChange={(e) =>
-                  setNewCourse((c) => ({ ...c, instructor: e.target.value }))
-                }
-                placeholder="Instructor Name"
-                required
+                type="url"
+                value={newCourse.accessLink}
+                onChange={(e) => setNewCourse(c => ({ ...c, accessLink: e.target.value }))}
+                placeholder="Access Link (optional)"
                 className="px-3 py-2 rounded-lg bg-[#1a1333]/60 border border-purple-900 text-white placeholder:text-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400"
               />
-              <select
-                value={newCourse.status}
-                onChange={(e) =>
-                  setNewCourse((c) => ({ ...c, status: e.target.value }))
-                }
-                className="px-3 py-2 rounded-lg bg-[#1a1333]/60 border border-purple-900 text-white focus:outline-none focus:ring-2 focus:ring-purple-400"
-              >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
+              <input
+                type="text"
+                value={newCourse.accessCode}
+                onChange={(e) => setNewCourse(c => ({ ...c, accessCode: e.target.value }))}
+                placeholder="Access Code (optional)"
+                className="px-3 py-2 rounded-lg bg-[#1a1333]/60 border border-purple-900 text-white placeholder:text-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400"
+              />
+              <div>
+                <label className="block text-xs text-purple-300 mb-1">Course Cover Image</label>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-3">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          if (!file.type.startsWith('image/')) {
+                            setCreateError('Only image files allowed');
+                            return;
+                          }
+                          handleUploadImage(file);
+                        }
+                      }}
+                      className="text-sm text-purple-200 file:mr-3 file:py-2 file:px-3 file:rounded file:border-0 file:bg-purple-800/60 file:text-purple-200 hover:file:bg-purple-800/80 cursor-pointer"
+                    />
+                    {newCourse.imageUrl && !uploading && (
+                      <span className="text-xs text-green-300 truncate max-w-[140px]">Image uploaded</span>
+                    )}
+                  </div>
+                  {uploading && (
+                    <div className="w-full">
+                      <div className="h-2 w-full bg-purple-900/40 rounded overflow-hidden">
+                        <div
+                          className="h-2 bg-purple-500 transition-all duration-200"
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                      <div className="text-[10px] mt-1 text-purple-300 tracking-wide">
+                        Uploading {uploadProgress}%
+                      </div>
+                    </div>
+                  )}
+                  {newCourse.imageUrl && !uploading && (
+                    <div className="flex items-center gap-3">
+                      {/* Simple preview */}
+                      {/* Using next/image for optimization; using unoptimized to avoid layout shift in modal */}
+                      <div className="h-14 w-20 relative rounded overflow-hidden border border-purple-800">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={newCourse.imageUrl}
+                          alt="Course cover preview"
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setNewCourse(c => ({ ...c, imageUrl: '' }));
+                          if (fileInputRef.current) fileInputRef.current.value='';
+                        }}
+                        className="text-xs px-2 py-1 bg-red-900/50 hover:bg-red-900/70 text-red-200 rounded"
+                      >Remove</button>
+                    </div>
+                  )}
+                </div>
+              </div>
               <div className="flex gap-2 mt-2 justify-end">
                 <button
                   type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded-lg bg-red-900/60 text-red-200 hover:bg-red-900/80 focus:outline-none focus:ring-2 focus:ring-red-400"
+                  onClick={() => { setShowModal(false); resetForm(); }}
+                  className="px-4 py-2 rounded-lg bg-red-900/60 text-red-200 hover:bg-red-900/80 focus:outline-none focus:ring-2 focus:ring-red-400 disabled:opacity-60"
+                  disabled={creating}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-400 font-bold"
+                  disabled={creating || uploading}
+                  className="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-400 font-bold disabled:opacity-60"
                 >
-                  Create
+                  {creating ? 'Creating...' : 'Create'}
                 </button>
               </div>
             </form>

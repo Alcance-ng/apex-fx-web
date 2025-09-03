@@ -3,17 +3,17 @@ import {
   AcademicCapIcon,
   PencilIcon,
   TrashIcon,
-  CheckCircleIcon,
-  ClockIcon,
 } from "@heroicons/react/24/solid";
 
 export type Course = {
   id: string;
-  title: string;
-  instructor?: string;
-  instructorName?: string;
-  status?: string;
-  createdAt?: string;
+  name: string;
+  description: string;
+  amount: number;
+  discount: number;
+  imageUrl?: string;
+  duration: string;
+  enrollCount: number;
 };
 
 interface AdminCoursesTableProps {
@@ -57,59 +57,74 @@ export default function AdminCoursesTable({
       <table className="w-full bg-[#170a0e]/60 rounded-lg overflow-hidden border border-red-900">
         <thead>
           <tr className="bg-[#2a0f1a]/80 text-red-200">
-            <th className="py-3 px-4 text-left">Title</th>
-            <th className="py-3 px-4 text-left">Instructor</th>
-            <th className="py-3 px-4 text-left">Status</th>
-            <th className="py-3 px-4 text-left">Created</th>
+            <th className="py-3 px-4 text-left">Course Name</th>
+            <th className="py-3 px-4 text-left">Description</th>
+            <th className="py-3 px-4 text-left">Price</th>
+            <th className="py-3 px-4 text-left">Duration</th>
+            <th className="py-3 px-4 text-left">Enrollments</th>
             <th className="py-3 px-4 text-left">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {courses.map((c) => (
-            <tr
-              key={c.id}
-              className={`border-t border-red-900 hover:bg-red-900/10`}
-            >
-              <td className="py-2 px-4 whitespace-nowrap flex items-center gap-2">
-                <AcademicCapIcon className="h-5 w-5 text-blue-300" />
-                {c.title}
-              </td>
-              <td className="py-2 px-4 whitespace-nowrap">
-                {c.instructor || c.instructorName || "-"}
-              </td>
-              <td className="py-2 px-4 whitespace-nowrap font-bold uppercase">
-                {c.status === "active" ? (
-                  <span className="text-green-300 flex items-center gap-1">
-                    <CheckCircleIcon className="h-4 w-4 text-green-300" />{" "}
-                    ACTIVE
+          {courses.map((c) => {
+            const discountedPrice = c.amount - (c.amount * c.discount) / 100;
+            const hasDiscount = c.discount > 0;
+
+            return (
+              <tr
+                key={c.id}
+                className={`border-t border-red-900 hover:bg-red-900/10`}
+              >
+                <td className="py-2 px-4 whitespace-nowrap flex items-center gap-2">
+                  <AcademicCapIcon className="h-5 w-5 text-blue-300" />
+                  {c.name}
+                </td>
+                <td className="py-2 px-4 max-w-xs truncate">
+                  {c.description}
+                </td>
+                <td className="py-2 px-4 whitespace-nowrap">
+                  {hasDiscount ? (
+                    <div className="flex flex-col">
+                      <span className="text-green-300 font-bold">
+                        ${discountedPrice.toFixed(2)}
+                      </span>
+                      <span className="text-red-300 line-through text-sm">
+                        ${c.amount.toFixed(2)}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-white font-bold">
+                      ${c.amount.toFixed(2)}
+                    </span>
+                  )}
+                </td>
+                <td className="py-2 px-4 whitespace-nowrap">
+                  {c.duration}
+                </td>
+                <td className="py-2 px-4 whitespace-nowrap">
+                  <span className="text-blue-300 font-bold">
+                    {c.enrollCount}
                   </span>
-                ) : (
-                  <span className="text-yellow-300 flex items-center gap-1">
-                    <ClockIcon className="h-4 w-4 text-yellow-300" /> INACTIVE
-                  </span>
-                )}
-              </td>
-              <td className="py-2 px-4 whitespace-nowrap">
-                {c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "-"}
-              </td>
-              <td className="py-2 px-4 whitespace-nowrap flex gap-2">
-                <button
-                  onClick={() => onEdit(c.id)}
-                  className="p-1 rounded hover:bg-blue-900/30 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  aria-label={`Edit ${c.title}`}
-                >
-                  <PencilIcon className="h-5 w-5 text-blue-300" />
-                </button>
-                <button
-                  onClick={() => onDelete(c.id)}
-                  className="p-1 rounded hover:bg-red-900/30 focus:outline-none focus:ring-2 focus:ring-red-400"
-                  aria-label={`Delete ${c.title}`}
-                >
-                  <TrashIcon className="h-5 w-5 text-red-300" />
-                </button>
-              </td>
-            </tr>
-          ))}
+                </td>
+                <td className="py-2 px-4 whitespace-nowrap flex gap-2">
+                  <button
+                    onClick={() => onEdit(c.id)}
+                    className="p-1 rounded hover:bg-blue-900/30 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    aria-label={`Edit ${c.name}`}
+                  >
+                    <PencilIcon className="h-5 w-5 text-blue-300" />
+                  </button>
+                  <button
+                    onClick={() => onDelete(c.id)}
+                    className="p-1 rounded hover:bg-red-900/30 focus:outline-none focus:ring-2 focus:ring-red-400"
+                    aria-label={`Delete ${c.name}`}
+                  >
+                    <TrashIcon className="h-5 w-5 text-red-300" />
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
       {/* Pagination */}
