@@ -8,13 +8,13 @@ import Link from "next/link";
 interface StatsCardsProps {
   activeSignals?: number;
   pnl?: string;
-  coursesCompleted?: string;
+  myCoursesCount?: string;
 }
 
 export function StatsCards({
   activeSignals = 12,
   pnl = "+$2,450",
-  coursesCompleted = "3/8",
+  myCoursesCount = "0",
 }: StatsCardsProps) {
   const stats = [
     {
@@ -45,11 +45,12 @@ export function StatsCards({
       iconBg: "bg-emerald-800/50",
       cardBg: "bg-white/10",
       iconColor: "text-lime-300",
-      title: "Courses Completed",
-      value: coursesCompleted,
+      title: "My Courses",
+      value: myCoursesCount,
       valueColor: "text-white",
       titleColor: "text-lime-200",
       border: "border-white/10",
+      link: "/user/courses",
     },
   ];
   return (
