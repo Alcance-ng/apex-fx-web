@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ChevronLeftIcon, ChevronRightIcon, AcademicCapIcon, ChartBarIcon, SparklesIcon, BookOpenIcon, ChartBarSquareIcon, ClockIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useSignalPlans } from "@/hooks/useSignalPlans";
 import { useSession } from "next-auth/react";
@@ -34,6 +34,7 @@ interface FeaturedCarouselProps {
 
 export function FeaturedCarousel({ courses = [] }: FeaturedCarouselProps) {
   const { data: session } = useSession();
+  const router = useRouter();
   const { plans: allSignalPlans } = useSignalPlans(session?.accessToken);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerView, setItemsPerView] = useState(3);
@@ -127,12 +128,25 @@ export function FeaturedCarousel({ courses = [] }: FeaturedCarouselProps) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 items-start">
         {visibleItems.map((item) => (
-          <Link
+          <div
             key={item.id}
-            href={item.type === 'course' ? '/user/courses' : '/user/signals'}
-            className="group block h-full"
+            onClick={() => {
+              // Navigate to checkout page with item details
+              const params = new URLSearchParams({
+                id: item.id,
+                name: item.name,
+                description: item.description,
+                amount: item.amount.toString(),
+                type: item.type,
+                ...(item.duration && { duration: item.duration }),
+                ...(item.interval && { interval: item.interval }),
+                ...(item.plan_code && { plan_code: item.plan_code }),
+              });
+              router.push(`/checkout?${params.toString()}`);
+            }}
+            className="group block h-full cursor-pointer"
           >
-            <div className="bg-gradient-to-br from-white/15 to-white/5 rounded-xl p-6 hover:from-white/20 hover:to-white/10 transition-all duration-500 border border-white/20 hover:border-white/30 shadow-lg hover:shadow-2xl transform hover:scale-[1.02] hover:-translate-y-1 h-80 flex flex-col">
+            <div className="bg-gradient-to-br from-white/15 to-white/5 rounded-xl p-6 hover:from-white/20 hover:to-white/10 transition-all duration-500 border border-white/20 hover:border-white/30 shadow-lg hover:shadow-2xl transform hover:scale-[1.02] hover:-translate-y-1 h-80 flex flex-col cursor-pointer">
               <div className="flex items-start space-x-4 mb-4">
                 <div className="flex-shrink-0">
                   {item.imageUrl ? (
@@ -188,7 +202,7 @@ export function FeaturedCarousel({ courses = [] }: FeaturedCarouselProps) {
                 </p>
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-white/10">
+              <div className="flex items-center justify-between pt-4 border-t border-white/10 mb-4">
                 <div className="flex flex-col">
                   <span className="text-2xl font-bold text-white">
                     ${item.amount}
@@ -212,8 +226,18 @@ export function FeaturedCarousel({ courses = [] }: FeaturedCarouselProps) {
                   )}
                 </div>
               </div>
+
+              <div
+                className={`w-full py-3 px-4 rounded-lg font-semibold text-sm text-center transition-all duration-300 cursor-pointer ${
+                  item.type === 'course'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl'
+                    : 'bg-gradient-to-r from-emerald-500 to-lime-500 hover:from-emerald-600 hover:to-lime-600 text-white shadow-lg hover:shadow-xl'
+                }`}
+              >
+                {item.type === 'course' ? 'Enroll Now' : 'Subscribe'}
+              </div>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
 
